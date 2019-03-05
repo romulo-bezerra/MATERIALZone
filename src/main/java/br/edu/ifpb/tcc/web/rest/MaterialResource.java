@@ -17,7 +17,8 @@ public class MaterialResource {
 
     @PostMapping("material")
     public ResponseEntity<Material> createMaterial(@RequestBody Material material) {
-        return ResponseEntity.ok().body(materialService.save(material));
+        Material material1 = materialService.save(material);
+        return ResponseEntity.ok().body(material);
     }
 
     @GetMapping("/material/{id}")

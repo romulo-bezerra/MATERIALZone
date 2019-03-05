@@ -11,10 +11,9 @@ import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Max;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -32,23 +31,24 @@ public class MaterialServiceImpl implements MaterialService {
     public Material save(Material m) {
         GitUtil gitUtil = new GitUtil(m.getLinkRepositorio());
         FileUtil fileUtil = new FileUtil();
-        File clonedFile = gitUtil.doClone();
-        File[] filesRepo = fileUtil.getFiles(clonedFile);
 
-        List<String> aggregateLinesFileRepo = new ArrayList<>();
-        for (File scannedFile : filesRepo){
-            List<String> l = fileUtil.readContentFileAsList(scannedFile);
-
-            System.out.println("\n\n\nArquivo lido:\n\n\n" + l.toString());
-
-
+        List<String> aggregateLines = new ArrayList<>();
+        for (File scannedFile : fileUtil.getFiles(gitUtil.doClone())){
+            for (String scannedLine : fileUtil.readContentFileAsList(scannedFile)){
+                aggregateLines.add(scannedLine);
+            }
         }
-//        m.setLinhasArquivoRepo(aggregateLinesFileRepo);
-        return materialRepository.save(m);
+        m.setLinhasArquivoRepo(aggregateLines);
+
+        Material material = materialRepository.save(m);
+
+        System.out.println("\n\nCategoria encontrada: \n\n" + getCategoriasByMaterial(material));
+
+        return material;
     }
 
     public Iterable<Material> getMaterialByRelatedWordsCategoria(){
-        String id = "qdfPSmkBXeEsJL7uHSPh";
+        String id = "NbbWTmkBv5BUgff6Xyf6";
         Optional<Categoria> categoriaOptional = categoriaRepository.findById(id);
         Categoria categoria = new Categoria();
         if (categoriaOptional.isPresent()){
@@ -60,6 +60,23 @@ public class MaterialServiceImpl implements MaterialService {
     public Iterable<Material> findByTextTest(List<String> palavrasRelacionadas) {
         QueryBuilder queryBuilder = new MatchQueryBuilder("linhasArquivoRepo", palavrasRelacionadas);
         return materialRepository.search(queryBuilder);
+    }
+
+    public Set<String> getCategoriasByMaterial(Material material) {
+        Set<String> retorno = new HashSet<>();
+        Iterable<Categoria> categorias = toList(categoriaRepository.findAll());
+
+        Iterable<Material> materiais;
+        for (Categoria categoria : categorias){
+            materiais = findByTextTest(categoria.getPalavrasRelacionadas());
+            for (Material m : materiais){
+                if (m.getId().equals(material.getId())){
+                    retorno.add(categoria.getSubcategoria());
+                    break;
+                }
+            }
+        }
+        return retorno;
     }
 
     public Material findOne(String id) {

@@ -3,8 +3,8 @@ package br.edu.ifpb.tcc.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,19 +52,46 @@ public class FileUtil {
         return null;
     }
 
-    public List<String> readContentFileAsList(File file) {
-        Path path = Paths.get(file.toURI());
-        try {
-            List<String> readFiles = new ArrayList<>();
+    public List<String> readContentFileAsList(File file){
+        List<String> retorno = new ArrayList<>();
+        String nameFile = file.getName();
 
-            for (String fr : Files.readAllLines(path)){
-                readFiles.add(formmaterString(fr));
+        if(!nameFile.endsWith("jar") && !nameFile.endsWith("png")
+                && !nameFile.endsWith("jpeg") && !nameFile.endsWith("gz")
+                && !nameFile.endsWith("gif") && !nameFile.endsWith("tiff")
+                && !nameFile.endsWith("bmp") && !nameFile.endsWith("psd")
+                && !nameFile.endsWith("exif") && !nameFile.endsWith("zip")
+                && !nameFile.endsWith("rar") && !nameFile.endsWith("tar")
+                && !nameFile.endsWith("z") && !nameFile.endsWith("taz")
+                && !nameFile.endsWith("tgz") && !nameFile.endsWith("arj")){
+
+            BufferedReader conteudoFile = null;
+            String linha = "";
+
+            try {
+                conteudoFile = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+                while ((linha = conteudoFile.readLine()) != null) {
+                    retorno.add(formmaterString(linha));
+                }
+                return retorno;
+
+            } catch (FileNotFoundException e) {
+                log.error("Arquivo não encontrado: \n" + e.getMessage());
+                return retorno;
+            } catch (IOException e) {
+                log.error("IO erro: \n" + e.getMessage());
+                return retorno;
+            } finally {
+                if (conteudoFile != null){
+                    try {
+                        conteudoFile.close();
+                    } catch (IOException e) {
+                        log.error("IO erro: \n" + e.getMessage());
+                    }
+                }
             }
-            return readFiles;
-        } catch (IOException e) {
-            log.error(e.getMessage());
         }
-        return null;
+        return retorno;
     }
 
     private String formmaterString(String s){

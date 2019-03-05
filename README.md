@@ -1,2 +1,0 @@
-# tcc
-My TCC (Editable)
