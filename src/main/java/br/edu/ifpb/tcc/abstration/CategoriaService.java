@@ -2,20 +2,20 @@ package br.edu.ifpb.tcc.abstration;
 
 import br.edu.ifpb.tcc.domain.Categoria;
 
-import java.util.List;
-
 public interface CategoriaService {
 
     public Categoria save(Categoria c);
 
+    public Categoria update(Categoria categoria);
+
     public Categoria findOne(String id);
 
-    public List<Categoria> findAll();
+    public Iterable<Categoria> findAll();
+
+    public Iterable<Categoria> findByText(String text);
 
     public void deleteAll();
 
-    public Iterable<Categoria> findCategoriasRelated(String text);
-
-    public Iterable<Categoria> getCategoriaByPalavrasRelacionadas(String palavrasRelacionadas);
+    public void delete(String id);
 
 }

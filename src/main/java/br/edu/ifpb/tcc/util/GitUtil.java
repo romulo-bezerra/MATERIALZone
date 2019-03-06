@@ -16,36 +16,52 @@ public class GitUtil {
     private final String password = "legacata135";
     private String linkHttpRepo;
 
-    //Configurar diretório dinâmico (da aplicação)
-    final String dir = "";
-
     public GitUtil(String linkHttpRepo){
         this.linkHttpRepo = linkHttpRepo;
     }
 
     /**
+     * Realiza clone (do comando: git clone <link_repo>) de um repositório do Github
      *
-     * @return File, referência para a raiz do diretório clonado
+     * @return File file, referência para a raiz do diretório clonado
      */
     public File doClone(){
-
         CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(user, password);
 
-        //Configurar diretório dinâmico (da aplicação)
-        final String path = "/home/romulo/Documentos/teste04";
+        File file = new File("src/main/resources/temp-repositories");
 
         try {
             Git git = Git.cloneRepository()
-                    .setURI(linkHttpRepo).setDirectory(new File(path))
-                    .setCredentialsProvider(credentialsProvider).call();
+                    .setURI(linkHttpRepo).setDirectory(file)
+                    .setCredentialsProvider(credentialsProvider)
+                    .call();
 
-            log.debug("\nPath retornado: " + path + "\n");
-            return new File(path);
+            return file;
         } catch (GitAPIException e) {
-            log.debug("\nNão foi possível clonar o repositório\n");
-            log.error(e.getMessage());
-
+            log.debug("\nNão foi possível clonar o repositório: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Exclui o Diretório dado com todos seus sub-diretórios e arquivos:
+     *
+     * @param dir
+     */
+    public void deleteDir(File dir){
+        String[] arqs;
+        File arq;
+        int i;
+
+        arqs = dir.list();
+        for(i=0; i<arqs.length; i++){
+            arq = new File(dir.getPath(), arqs[i]);
+            if(arq.isDirectory()){
+                deleteDir(arq);
+            } else {
+                arq.delete();
+            }
+        }
+        dir.delete();
     }
 }

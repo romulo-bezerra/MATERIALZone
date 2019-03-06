@@ -11,11 +11,8 @@ import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Max;
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
@@ -32,43 +29,43 @@ public class MaterialServiceImpl implements MaterialService {
         GitUtil gitUtil = new GitUtil(m.getLinkRepositorio());
         FileUtil fileUtil = new FileUtil();
 
+        File clonedRepo = gitUtil.doClone();
+
         List<String> aggregateLines = new ArrayList<>();
-        for (File scannedFile : fileUtil.getFiles(gitUtil.doClone())){
+        for (File scannedFile : fileUtil.getFiles(clonedRepo)){
             for (String scannedLine : fileUtil.readContentFileAsList(scannedFile)){
                 aggregateLines.add(scannedLine);
             }
         }
         m.setLinhasArquivoRepo(aggregateLines);
 
-        Material material = materialRepository.save(m);
+        gitUtil.deleteDir(clonedRepo);
 
-        System.out.println("\n\nCategoria encontrada: \n\n" + getCategoriasByMaterial(material));
+        Material material = materialRepository.save(m);
 
         return material;
     }
 
-    public Iterable<Material> getMaterialByRelatedWordsCategoria(){
-        String id = "NbbWTmkBv5BUgff6Xyf6";
-        Optional<Categoria> categoriaOptional = categoriaRepository.findById(id);
+    public Material update(Material material){
+        return materialRepository.save(material);
+    }
+
+    public Iterable<Material> getMateriaisByCategoria(String idCategoria){
+        Optional<Categoria> categoriaOptional = categoriaRepository.findById(idCategoria);
         Categoria categoria = new Categoria();
         if (categoriaOptional.isPresent()){
             categoria = categoriaOptional.get();
         }
-        return findByTextTest(categoria.getPalavrasRelacionadas());
-    }
-
-    public Iterable<Material> findByTextTest(List<String> palavrasRelacionadas) {
-        QueryBuilder queryBuilder = new MatchQueryBuilder("linhasArquivoRepo", palavrasRelacionadas);
-        return materialRepository.search(queryBuilder);
+        return findByPalavrasRelacionadas(categoria.getPalavrasRelacionadas());
     }
 
     public Set<String> getCategoriasByMaterial(Material material) {
         Set<String> retorno = new HashSet<>();
-        Iterable<Categoria> categorias = toList(categoriaRepository.findAll());
+        Iterable<Categoria> categorias = categoriaRepository.findAll();
 
         Iterable<Material> materiais;
         for (Categoria categoria : categorias){
-            materiais = findByTextTest(categoria.getPalavrasRelacionadas());
+            materiais = findByPalavrasRelacionadas(categoria.getPalavrasRelacionadas());
             for (Material m : materiais){
                 if (m.getId().equals(material.getId())){
                     retorno.add(categoria.getSubcategoria());
@@ -77,6 +74,17 @@ public class MaterialServiceImpl implements MaterialService {
             }
         }
         return retorno;
+    }
+
+    /**
+     * Busca uma lista de materiais dada as palavras relacionadas de uma categoria
+     *
+     * @param palavrasRelacionadas, lista de palavras da categoria em questão
+     * @return Iterable<Material>, lista de iterables de materiais
+     */
+    private Iterable<Material> findByPalavrasRelacionadas(List<String> palavrasRelacionadas) {
+        QueryBuilder queryBuilder = new MatchQueryBuilder("linhasArquivoRepo", palavrasRelacionadas);
+        return materialRepository.search(queryBuilder);
     }
 
     public Material findOne(String id) {
@@ -94,14 +102,12 @@ public class MaterialServiceImpl implements MaterialService {
         return materialRepository.search(queryBuilder);
     }
 
-    public void deleteAll(){
-        materialRepository.deleteAll();
+    public void delete(String id){
+        materialRepository.deleteById(id);
     }
 
-    private static <Categoria> List<Categoria> toList(final Iterable<Categoria> iterable) {
-        return StreamSupport
-                .stream(iterable.spliterator(), false)
-                .collect(Collectors.toList());
+    public void deleteAll(){
+        materialRepository.deleteAll();
     }
 
 }

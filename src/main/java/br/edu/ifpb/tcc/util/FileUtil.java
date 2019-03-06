@@ -16,6 +16,12 @@ public class FileUtil {
 
     private final Logger log = LoggerFactory.getLogger(FileUtil.class);
 
+    /**
+     * Retorna uma lista de arquivos de texto contidos no diretório
+     *
+     * @param dir
+     * @return File[] filesEncontrados
+     */
     public File[] getFiles(File dir) {
         Vector enc = new Vector();
         File[] files = dir.listFiles();
@@ -34,11 +40,11 @@ public class FileUtil {
             }
         }
         //Transforma um Vector em um File[]:
-        File[] encontrados = new File[enc.size()];
+        File[] filesEncontrados = new File[enc.size()];
         for (int i = 0; i < enc.size(); i++) {
-            encontrados[i] = (File)enc.elementAt(i);
+            filesEncontrados[i] = (File)enc.elementAt(i);
         }
-        return encontrados;
+        return filesEncontrados;
     }
 
     public String readContentFile(File file) {

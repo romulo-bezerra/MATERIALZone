@@ -1,16 +1,18 @@
 package br.edu.ifpb.tcc.abstration;
 
-import br.edu.ifpb.tcc.domain.Categoria;
 import br.edu.ifpb.tcc.domain.Material;
-import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Set;
-
 
 public interface MaterialService {
 
     public Material save(Material m);
+
+    public Material update(Material material);
+
+    public Iterable<Material> getMateriaisByCategoria(String idCategoria);
+
+    public Set<String> getCategoriasByMaterial(Material material);
 
     public Material findOne(String id);
 
@@ -18,9 +20,7 @@ public interface MaterialService {
 
     public Iterable<Material> findByText(String text);
 
-    public Iterable<Material> getMaterialByRelatedWordsCategoria();
-
-    public Set<String> getCategoriasByMaterial(Material material);
+    public void delete(String id);
 
     public void deleteAll();
 
