@@ -2,24 +2,16 @@ package br.edu.ifpb.tccii.materialzone.abstration;
 
 import br.edu.ifpb.tccii.materialzone.domain.Usuario;
 
+import java.util.Optional;
+
 public interface UsuarioService {
 
-    public Usuario save(Usuario m);
+    Usuario save(Usuario usuario);
 
-//    public Material update(Material material);
+    Iterable<Usuario> findAll();
 
-//    public Iterable<Material> getMateriaisByCategoria(String idCategoria);
+    Optional<Usuario> findOne(String id);
 
-//    public Set<String> getCategoriasByMaterial(Material material);
-
-//    public Material findOne(String id);
-
-    public Iterable<Usuario> findAll();
-
-//    public Iterable<Material> findByText(String text);
-
-//    public void delete(String id);
-
-//    public void deleteAll();
+    void delete(String id);
 
 }

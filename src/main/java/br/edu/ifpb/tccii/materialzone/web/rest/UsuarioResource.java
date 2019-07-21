@@ -2,12 +2,24 @@ package br.edu.ifpb.tccii.materialzone.web.rest;
 
 import br.edu.ifpb.tccii.materialzone.abstration.UsuarioService;
 import br.edu.ifpb.tccii.materialzone.domain.Usuario;
+import br.edu.ifpb.tccii.materialzone.web.errors.BadRequestAlertException;
+import br.edu.ifpb.tccii.materialzone.web.util.HeaderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class UsuarioResource {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final String ENTITY_NAME = "Usuario";
 
     private UsuarioService usuarioService;
 
@@ -16,52 +28,44 @@ public class UsuarioResource {
     }
 
     @PostMapping("/usuarios")
-    public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
-        return ResponseEntity.ok().body(usuarioService.save(usuario));
+    public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody Usuario usuario) throws URISyntaxException {
+        log.debug("REST request to save Usuario : {}", usuario);
+        Usuario result = usuarioService.save(usuario);
+        return ResponseEntity.created(new URI("/api/usuarios/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
     }
 
-//    @GetMapping("/materiais/{id}")
-//    @ApiOperation(value = "Recupera um material pelo ID")
-//    public ResponseEntity<Material> getMaterial(@PathVariable String id) {
-//        return ResponseEntity.ok().body(materialService.findOne(id));
-//    }
-
-//    @GetMapping("/materiais/fulltextsearch/{text}")
-//    @ApiOperation(value = "Recupera uma lista de materiais (Iterable<Material>) por texto")
-//    public ResponseEntity<Iterable<Material>> getMaterialByText(@PathVariable String text) {
-//        return ResponseEntity.ok().body(materialService.findByText(text));
-//    }
+    @PutMapping("/usuarios")
+    public ResponseEntity<Usuario> updateUsuario(@Valid @RequestBody Usuario usuario) throws URISyntaxException {
+        log.debug("REST request to update Usuario : {}", usuario);
+        if (usuario.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        Usuario result = usuarioService.save(usuario);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, usuario.getId())).body(result);
+    }
 
     @GetMapping("/usuarios")
     public ResponseEntity<Iterable<Usuario>> getAllUsuarios() {
+        log.debug("REST request to get all Usuarios");
         return ResponseEntity.ok().body(usuarioService.findAll());
     }
 
-//    @GetMapping("/materiais/bycategoria/{idCategoria}")
-//    @ApiOperation(value = "Recupera uma lista de materiais (Iterable<Material>) por categoria")
-//    public ResponseEntity<Iterable<Material>> getMateriaisByCategoria(@PathVariable String idCategoria) {
-//        return ResponseEntity.ok().body(materialService.getMateriaisByCategoria(idCategoria));
-//    }
+    @GetMapping("/usuarios/{id}")
+    public ResponseEntity<Usuario> getUsuario(@PathVariable String id) {
+        log.debug("REST request to get Usuario : {}", id);
+        Optional<Usuario> usuario = usuarioService.findOne(id);
+        if (usuario.isPresent()) return ResponseEntity.ok().body(usuario.get());
+        return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Usuario id %d inexists", id))).build();
+    }
 
-//    @DeleteMapping("/materiais/todos")
-//    @ApiOperation(value = "Deleta todos os materiais")
-//    public ResponseEntity<Void> deleteAll() {
-//        materialService.deleteAll();
-//        return ResponseEntity.ok().build();
-//    }
-
-//    @DeleteMapping("/materiais/{id}")
-//    @ApiOperation(value = "Recupera um materiai pelo ID")
-//    public ResponseEntity<Void> deleteMaterial(@PathVariable String id) {
-//        Material material = materialService.findOne(id);
-//        if (material != null) {
-//            materialService.delete(id);
-//            return ResponseEntity.ok().build();
-//        } else {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.add("Message", String.format("Material de id %d não existe", id));
-//            return ResponseEntity.notFound().headers(headers).build();
-//        }
-//    }
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<Void> deleteUsuario(@PathVariable String id) {
+        log.debug("REST request to delete Usuario : {}", id);
+        Optional<Usuario> usuario = usuarioService.findOne(id);
+        if (usuario.isPresent()) {
+            usuarioService.delete(id);
+            return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+        }
+        return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Usuario id %d inexists", id))).build();
+    }
 
 }
