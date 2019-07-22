@@ -7,11 +7,8 @@ import java.util.Optional;
 public interface UsuarioService {
 
     Usuario save(Usuario usuario);
-
     Iterable<Usuario> findAll();
-
     Optional<Usuario> findOne(String id);
-
     void delete(String id);
 
 }

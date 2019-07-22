@@ -1,6 +1,6 @@
 //package br.edu.ifpb.tccii.materialzone.config;
 //
-//import br.edu.ifpb.tccii.materialzone.util.RestoreSubCategorias;
+//import br.edu.ifpb.tccii.materialzone.service.util.RestoreSubCategorias;
 //import org.springframework.context.ApplicationListener;
 //import org.springframework.context.event.ContextRefreshedEvent;
 //import org.springframework.stereotype.Component;

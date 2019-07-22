@@ -1,5 +1,6 @@
 package br.edu.ifpb.tccii.materialzone.domain;
 
+import br.edu.ifpb.tccii.materialzone.domain.enumeration.Papel;
 import br.edu.ifpb.tccii.materialzone.domain.enumeration.Sexo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,8 @@ public class Usuario {
     private String instituto;
     @Field(type = FieldType.Text)
     private Sexo sexo;
+    @Field(type = FieldType.Text)
+    private Papel papel;
 
     public Usuario() {} //For Spring Data
 
