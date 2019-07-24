@@ -13,7 +13,7 @@ public class Categoria {
     @Id
     private String id;
     private String nome;
-    private double pontuacaoFinal;
+    private double pontuacaoFinalClassificacao;
 
     public Categoria() { } //For Spring Data
 

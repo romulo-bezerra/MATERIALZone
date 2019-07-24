@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Data
 @AllArgsConstructor
@@ -24,9 +22,7 @@ public class Usuario {
     private String urlPerfilGithub;
     private String campus;
     private String instituto;
-    @Field(type = FieldType.Text)
     private Sexo sexo;
-    @Field(type = FieldType.Text)
     private Papel papel;
 
     public Usuario() {} //For Spring Data

@@ -1,4 +1,4 @@
-package br.edu.ifpb.tccii.materialzone.loader;
+package br.edu.ifpb.tccii.materialzone;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

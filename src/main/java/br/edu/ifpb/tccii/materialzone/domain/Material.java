@@ -5,7 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +19,13 @@ public class Material {
     private String linkRepositorio;
     private String titulo;
     private String descricao;
-    private ZonedDateTime timestamp;
+    private ZonedDateTime timestampCriacao;
     private List<String> arquivosRepositorio;
     private Categoria categoria;
 
-    public Material(){
+    public Material(){ //For Spring Data
         this.arquivosRepositorio = new ArrayList<>();
+        this.timestampCriacao = ZonedDateTime.now(ZoneId.systemDefault()); //setting atual time
     }
 
 }

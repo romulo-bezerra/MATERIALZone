@@ -1,73 +1,73 @@
-//package br.edu.ifpb.tccii.materialzone.web.rest;
-//
-//import br.edu.ifpb.tccii.materialzone.abstration.MaterialService;
-//import br.edu.ifpb.tccii.materialzone.domain.Material;
-//import io.swagger.annotations.Api;
-//import io.swagger.annotations.ApiOperation;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.*;
-//
-//@RestController
-//@RequestMapping("/api")
-//@Api(value = "MaterialResource Controller", description = "Serviços pertinentes à materiais")
-//public class MaterialResource {
-//
-//    private final MaterialService materialService;
-//
-//    public MaterialResource(MaterialService materialService) {
-//        this.materialService = materialService;
-//    }
-//
-//    @PostMapping("materiais")
-//    @ApiOperation(value = "Cria um novo material ou atualiza se existente")
-//    public ResponseEntity<Material> createMaterial(@RequestBody Material material) {
-//        return ResponseEntity.ok().body(materialService.save(material));
-//    }
-//
-//    @GetMapping("/materiais/{id}")
-//    @ApiOperation(value = "Recupera um material pelo ID")
-//    public ResponseEntity<Material> getMaterial(@PathVariable String id) {
-//        return ResponseEntity.ok().body(materialService.findOne(id));
-//    }
-//
-//    @GetMapping("/materiais/fulltextsearch/{text}")
-//    @ApiOperation(value = "Recupera uma lista de materiais (Iterable<Material>) por texto")
-//    public ResponseEntity<Iterable<Material>> getMaterialByText(@PathVariable String text) {
-//        return ResponseEntity.ok().body(materialService.findByText(text));
-//    }
-//
-//    @GetMapping("/materiais/todos")
-//    @ApiOperation(value = "Recupera todos os materiais")
-//    public ResponseEntity<Iterable<Material>> getAllMateriais() {
-//        return ResponseEntity.ok().body(materialService.findAll());
-//    }
-//
-//    @GetMapping("/materiais/bycategoria/{idCategoria}")
-//    @ApiOperation(value = "Recupera uma lista de materiais (Iterable<Material>) por categoria")
-//    public ResponseEntity<Iterable<Material>> getMateriaisByCategoria(@PathVariable String idCategoria) {
-//        return ResponseEntity.ok().body(materialService.getMateriaisByCategoria(idCategoria));
-//    }
-//
-//    @DeleteMapping("/materiais/todos")
-//    @ApiOperation(value = "Deleta todos os materiais")
-//    public ResponseEntity<Void> deleteAll() {
-//        materialService.deleteAll();
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @DeleteMapping("/materiais/{id}")
-//    @ApiOperation(value = "Recupera um materiai pelo ID")
-//    public ResponseEntity<Void> deleteMaterial(@PathVariable String id) {
-//        Material material = materialService.findOne(id);
-//        if (material != null) {
-//            materialService.delete(id);
-//            return ResponseEntity.ok().build();
-//        } else {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.add("Message", String.format("Material de id %d não existe", id));
-//            return ResponseEntity.notFound().headers(headers).build();
-//        }
-//    }
-//
-//}
+package br.edu.ifpb.tccii.materialzone.web.rest;
+
+import br.edu.ifpb.tccii.materialzone.abstration.MaterialService;
+import br.edu.ifpb.tccii.materialzone.domain.Material;
+import br.edu.ifpb.tccii.materialzone.web.errors.BadRequestAlertException;
+import br.edu.ifpb.tccii.materialzone.web.util.HeaderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.*;
+import java.util.Date;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api")
+public class MaterialResource {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final String ENTITY_NAME = "Material";
+
+    private MaterialService materialService;
+
+    public MaterialResource(MaterialService materialService) {
+        this.materialService = materialService;
+    }
+
+    @PostMapping("/materiais")
+    public ResponseEntity<Material> createMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
+        log.debug("REST request to save Material : {}", material);
+        Material result = materialService.save(material);
+        return ResponseEntity.created(new URI("/api/materiais/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
+    }
+
+    @PutMapping("/materiais")
+    public ResponseEntity<Material> updateMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
+        log.debug("REST request to update Material : {}", material);
+        if (material.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        Material result = materialService.save(material);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, material.getId())).body(result);
+    }
+
+    @GetMapping("/materiais")
+    public ResponseEntity<Iterable<Material>> getAllMateriais() {
+        log.debug("REST request to get all Materiais");
+        return ResponseEntity.ok().body(materialService.findAll());
+    }
+
+    @GetMapping("/materiais/{id}")
+    public ResponseEntity<Material> getMaterial(@PathVariable String id) {
+        log.debug("REST request to get Material : {}", id);
+        Optional<Material> material = materialService.findOne(id);
+        if (material.isPresent()) return ResponseEntity.ok().body(material.get());
+        return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Material id %d inexists", id))).build();
+    }
+
+    @DeleteMapping("/materiais/{id}")
+    public ResponseEntity<Void> deleteMaterial(@PathVariable String id) {
+        log.debug("REST request to delete Material : {}", id);
+        Optional<Material> material = materialService.findOne(id);
+        if (material.isPresent()) {
+            materialService.delete(id);
+            return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+        }
+        return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Materias id %d inexists", id))).build();
+    }
+
+}
