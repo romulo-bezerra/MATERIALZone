@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.*;
-import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -49,6 +47,12 @@ public class MaterialResource {
     public ResponseEntity<Iterable<Material>> getAllMateriais() {
         log.debug("REST request to get all Materiais");
         return ResponseEntity.ok().body(materialService.findAll());
+    }
+
+    @GetMapping("/materiais/textsearch/{text}")
+    public ResponseEntity<Iterable<Material>> findAllByTituloOrDescricao(@PathVariable String text) {
+        log.debug("REST request to get all Materiais by title or description");
+        return ResponseEntity.ok().body(materialService.findAllMaterialsByTitleOrDescription(text));
     }
 
     @GetMapping("/materiais/{id}")

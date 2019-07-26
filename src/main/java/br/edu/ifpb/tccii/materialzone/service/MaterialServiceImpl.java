@@ -4,6 +4,8 @@ import br.edu.ifpb.tccii.materialzone.abstration.GitRepositoryContentExtractor;
 import br.edu.ifpb.tccii.materialzone.abstration.MaterialService;
 import br.edu.ifpb.tccii.materialzone.domain.Material;
 import br.edu.ifpb.tccii.materialzone.repository.MaterialRepository;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,23 @@ public class MaterialServiceImpl implements MaterialService {
     public Iterable<Material> findAll() {
         log.debug("Request to get all Materiais");
         return materialRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Iterable<Material> findAllMaterialsByTitleOrDescription(String text) {
+        log.debug("Request to get all Materiais");
+        QueryBuilder query = QueryBuilders.boolQuery()
+                .should(QueryBuilders.queryStringQuery(text)
+                        .lenient(true)
+                        .field("titulo")
+                        .field("descricao"))
+                .should(QueryBuilders.queryStringQuery("*" + text + "*")
+                        .lenient(true)
+                        .field("titulo")
+                        .field("descricao"));
+
+        return materialRepository.search(query);
     }
 
     @Override

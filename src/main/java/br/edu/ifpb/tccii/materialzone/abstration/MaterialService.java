@@ -1,6 +1,7 @@
 package br.edu.ifpb.tccii.materialzone.abstration;
 
 import br.edu.ifpb.tccii.materialzone.domain.Material;
+
 import java.util.Optional;
 
 public interface MaterialService {
@@ -9,5 +10,6 @@ public interface MaterialService {
     Iterable<Material> findAll();
     Optional<Material> findOne(String id);
     void delete(String id);
+    Iterable<Material> findAllMaterialsByTitleOrDescription(String text);
 
 }
