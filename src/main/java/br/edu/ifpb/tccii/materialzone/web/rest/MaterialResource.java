@@ -35,6 +35,28 @@ public class MaterialResource {
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
     }
 
+    @PutMapping("/materiais/{materialId}/categoria/{categoriaId}")
+    public ResponseEntity<Material> addCategoria(@PathVariable final String materialId, @PathVariable final String categoriaId) throws URISyntaxException {
+        log.debug("REST request to add categoria to Material : {}");
+        Material result = materialService.addCategory(materialId, categoriaId);
+        if (!result.getId().isEmpty()){
+            return ResponseEntity.created(new URI("/api/materiais/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
+        }
+        return ResponseEntity.notFound().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, String.format("Material not exists"))).build();
+    }
+
+//    @GetMapping("/materiais/{materialId}/categoria/{categoriaId}")
+//    public Material getMaterialByIdAndCategoriasIdsExists(@PathVariable final String materialId, @PathVariable final String categoriaId){
+//        return materialService.existsByIdAndAndCategoriasIds(materialId, categoriaId);
+//    }
+
+    @GetMapping("/materiais/categoria/{categoriaId}")
+    public ResponseEntity<Iterable<Material>> findMaterialsByCategoriasIds(@PathVariable final String categoriaId){
+        log.debug("REST request to get all Materiais by categoriaId");
+        return ResponseEntity.ok().body(materialService.findMaterialsByCategoriasIds(categoriaId));
+    }
+
     @PutMapping("/materiais")
     public ResponseEntity<Material> updateMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
         log.debug("REST request to update Material : {}", material);

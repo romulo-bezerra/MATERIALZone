@@ -21,11 +21,15 @@ public class Material {
     private String descricao;
     private ZonedDateTime timestampCriacao;
     private List<String> arquivosRepositorio;
-    private Categoria categoria;
+    private List<String> categoriasIds;
 
     public Material(){ //For Spring Data
+        this.categoriasIds = new ArrayList<>();
         this.arquivosRepositorio = new ArrayList<>();
-        this.timestampCriacao = ZonedDateTime.now(ZoneId.systemDefault()); //setting atual time
+    }
+
+    public boolean addCategoria(String categoriaId){
+        return this.categoriasIds.add(categoriaId);
     }
 
 }

@@ -48,11 +48,6 @@
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>5.2.0.201812061821-r</version>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.boot</groupId>-->
-			<!--<artifactId>spring-boot-configuration-processor</artifactId>-->
-			<!--<optional>true</optional>-->
-		<!--</dependency>-->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>

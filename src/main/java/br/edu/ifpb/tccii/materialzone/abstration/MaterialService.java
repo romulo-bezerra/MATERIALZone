@@ -11,5 +11,7 @@ public interface MaterialService {
     Optional<Material> findOne(String id);
     void delete(String id);
     Iterable<Material> findAllMaterialsByTitleOrDescription(String text);
+    Material addCategory(String materialId, String categoriaId);
+    Iterable<Material> findMaterialsByCategoriasIds(String categoriaId);
 
 }
