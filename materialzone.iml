@@ -164,5 +164,6 @@
     <orderEntry type="library" name="Maven: org.zalando:jackson-datatype-problem:0.21.0" level="project" />
     <orderEntry type="library" name="Maven: org.zalando:faux-pas:0.8.0" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:2.0.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tika:tika-core:1.21" level="project" />
   </component>
 </module>

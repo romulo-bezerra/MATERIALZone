@@ -5,6 +5,7 @@ import br.edu.ifpb.tccii.materialzone.domain.Usuario;
 import br.edu.ifpb.tccii.materialzone.repository.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +15,9 @@ import java.util.Optional;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final UsuarioRepository usuarioRepository;
+    @Autowired private UsuarioRepository usuarioRepository;
 
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
+    public UsuarioServiceImpl() { }
 
     public Usuario save(Usuario usuario) {
         log.debug("Request to save Usuario : {}", usuario);

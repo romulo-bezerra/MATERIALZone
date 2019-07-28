@@ -23,16 +23,11 @@ import java.util.Optional;
 public class MaterialServiceImpl implements MaterialService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final MaterialRepository materialRepository;
-    private final GitRepositoryContentExtractor gitRepositoryContentExtractor;
+    @Autowired private MaterialRepository materialRepository;
+    @Autowired private GitRepositoryContentExtractor gitRepositoryContentExtractor;
+    @Autowired private CategoriaService categoriaService;
 
-    @Autowired
-    private CategoriaService categoriaService;
-
-    public MaterialServiceImpl(MaterialRepository materialRepository, GitRepositoryContentExtractor gitRepositoryContentExtractor) {
-        this.materialRepository = materialRepository;
-        this.gitRepositoryContentExtractor = gitRepositoryContentExtractor;
-    }
+    public MaterialServiceImpl() { }
 
     @Override
     public Material save(Material material) {

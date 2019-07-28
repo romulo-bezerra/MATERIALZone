@@ -63,6 +63,11 @@
 			<artifactId>problem-spring-web</artifactId>
 			<version>0.24.0-RC.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>1.21</version>
+		</dependency>
 	</dependencies>
 
 	<build>
