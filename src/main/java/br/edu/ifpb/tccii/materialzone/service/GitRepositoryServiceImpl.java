@@ -14,9 +14,10 @@ import java.io.File;
 @Service
 public class GitRepositoryServiceImpl implements GitRepositoryService {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final String user = "material-zone";
-    private final String password = "materialzone135";
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+    private final String USER = "material-zone";
+    private final String PASSWORD = "materialzone135";
+    private final String PATH_CLONE_REPO = "src/main/resources/temp-repositories";
 
     /**
      * Realiza clone (do comando: git clone <link_repo>) de um repositório do Github
@@ -24,17 +25,17 @@ public class GitRepositoryServiceImpl implements GitRepositoryService {
      */
     @Override
     public File doClone(String linkHttpRepository) {
-        //authenticate
-        CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(user, password);
-        //storage path
-        File file = new File("src/main/resources/temp-repositories");
-
+        CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(USER, PASSWORD);
+        File file = new File(PATH_CLONE_REPO); //storage path
         try {
-            Git git = Git.cloneRepository().setURI(linkHttpRepository)
-                    .setDirectory(file).setCredentialsProvider(credentialsProvider).call();
+            Git git = Git.cloneRepository()
+                    .setURI(linkHttpRepository)
+                    .setDirectory(file)
+                    .setCredentialsProvider(credentialsProvider)
+                    .call();
             return file;
         } catch (GitAPIException e) {
-            log.warn("Erro ao clonar o repositório. Link do repositório inconsistente!\n" + e.getMessage());
+            LOG.warn("Erro ao clonar o repositório. Link do repositório inconsistente!\n" + e.getMessage());
             return null;
         }
     }
