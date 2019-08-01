@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,7 +55,7 @@ public class FileManagerImpl implements FileManager {
     public String readContentFile(File file) {
         Path path = Paths.get(file.toURI());
         try {
-            String longText = Files.readAllLines(path).toString();
+            String longText = Files.readAllLines(path, StandardCharsets.ISO_8859_1).toString();
             return longText;
         } catch (IOException e) {
             log.warn("Falha ao lê o arquivo\n" + e.getMessage());
