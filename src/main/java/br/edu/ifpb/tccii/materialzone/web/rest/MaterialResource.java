@@ -2,6 +2,7 @@ package br.edu.ifpb.tccii.materialzone.web.rest;
 
 import br.edu.ifpb.tccii.materialzone.abstration.MaterialService;
 import br.edu.ifpb.tccii.materialzone.domain.Material;
+import br.edu.ifpb.tccii.materialzone.integration.CepService;
 import br.edu.ifpb.tccii.materialzone.web.errors.BadRequestAlertException;
 import br.edu.ifpb.tccii.materialzone.web.util.HeaderUtil;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,9 +24,12 @@ public class MaterialResource {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String ENTITY_NAME = "Material";
 
+    private CepService cepService;
+
     private MaterialService materialService;
 
-    public MaterialResource(MaterialService materialService) {
+    public MaterialResource(MaterialService materialService, CepService cepService) {
+        this.cepService = cepService;
         this.materialService = materialService;
     }
 
@@ -68,6 +74,13 @@ public class MaterialResource {
     @GetMapping("/materiais")
     public ResponseEntity<Iterable<Material>> getAllMateriais() {
         log.debug("REST request to get all Materiais");
+
+        List<String> content = new ArrayList<>();
+        content.add("public de . 0 Static Void main ? # string args".concat("#-?_keySlice?_-#"));
+        content.add("create table select insert update where from");
+
+        System.out.println("Resulttttt: " + cepService.getCep(content));
+
         return ResponseEntity.ok().body(materialService.findAll());
     }
 
