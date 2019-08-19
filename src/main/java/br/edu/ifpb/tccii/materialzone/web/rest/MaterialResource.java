@@ -2,7 +2,7 @@ package br.edu.ifpb.tccii.materialzone.web.rest;
 
 import br.edu.ifpb.tccii.materialzone.abstration.MaterialService;
 import br.edu.ifpb.tccii.materialzone.domain.Material;
-import br.edu.ifpb.tccii.materialzone.integration.CepService;
+import br.edu.ifpb.tccii.materialzone.integration.ClassifierResultService;
 import br.edu.ifpb.tccii.materialzone.web.errors.BadRequestAlertException;
 import br.edu.ifpb.tccii.materialzone.web.util.HeaderUtil;
 import org.slf4j.Logger;
@@ -23,13 +23,11 @@ public class MaterialResource {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String ENTITY_NAME = "Material";
-
-    private CepService cepService;
-
+    private ClassifierResultService classifierResultService;
     private MaterialService materialService;
 
-    public MaterialResource(MaterialService materialService, CepService cepService) {
-        this.cepService = cepService;
+    public MaterialResource(MaterialService materialService, ClassifierResultService classifierResultService) {
+        this.classifierResultService = classifierResultService;
         this.materialService = materialService;
     }
 
@@ -79,7 +77,7 @@ public class MaterialResource {
         content.add("public de . 0 Static Void main ? # string args".concat("#-?_keySlice?_-#"));
         content.add("create table select insert update where from");
 
-        System.out.println("Resulttttt: " + cepService.getCep(content));
+        System.out.println("Result: " + classifierResultService.getResultClassification(content));
 
         return ResponseEntity.ok().body(materialService.findAll());
     }
