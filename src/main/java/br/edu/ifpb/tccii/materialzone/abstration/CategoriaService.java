@@ -10,5 +10,6 @@ public interface CategoriaService {
     Iterable<Categoria> findAll();
     Optional<Categoria> findOne(String id);
     void delete(String id);
+    Optional<Categoria> findByName(String name);
 
 }

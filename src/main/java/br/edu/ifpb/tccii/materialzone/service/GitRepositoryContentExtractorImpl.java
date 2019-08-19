@@ -38,11 +38,12 @@ public class GitRepositoryContentExtractorImpl implements GitRepositoryContentEx
         File[] arquivosParaAnalise = fileManager.getAllFilesDirectory(clonedRepository);
 
         log.debug("Escaneando arquivos...");
+        String sliceKeyForSegregation = "#-?_keySlice?_-#";
         for (File scannedFile : arquivosParaAnalise){
             if (isPassiveReadFile(scannedFile)){
                 log.debug("### Arquivo lido: " + scannedFile.getName());
                 String contentFile = fileManager.readContentFile(scannedFile);
-                aggregateLines.add(contentFile);
+                aggregateLines.add(contentFile.concat(sliceKeyForSegregation));
             }
         }
         log.debug("Arquivos escaneados: " + arquivosParaAnalise.length);

@@ -40,6 +40,13 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<Categoria> findByName(String name) {
+        log.debug("Request to get Categoria : {}", name);
+        return categoriaRepository.findByNome(name);
+    }
+
+    @Override
     public void delete(String id) {
         log.debug("Request to delete Categoria : {}", id);
         categoriaRepository.deleteById(id);

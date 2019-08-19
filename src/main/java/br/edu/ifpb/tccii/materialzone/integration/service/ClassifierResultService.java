@@ -1,4 +1,4 @@
-package br.edu.ifpb.tccii.materialzone.integration;
+package br.edu.ifpb.tccii.materialzone.integration.service;
 
 import br.edu.ifpb.tccii.materialzone.integration.dto.ResultClassifier;
 import org.springframework.cloud.openfeign.FeignClient;

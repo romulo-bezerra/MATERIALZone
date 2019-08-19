@@ -5,6 +5,8 @@ import br.edu.ifpb.tccii.materialzone.abstration.GitRepositoryContentExtractor;
 import br.edu.ifpb.tccii.materialzone.abstration.MaterialService;
 import br.edu.ifpb.tccii.materialzone.domain.Categoria;
 import br.edu.ifpb.tccii.materialzone.domain.Material;
+import br.edu.ifpb.tccii.materialzone.integration.service.ClassifierResultService;
+import br.edu.ifpb.tccii.materialzone.integration.dto.ResultClassifier;
 import br.edu.ifpb.tccii.materialzone.repository.MaterialRepository;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -26,8 +28,17 @@ public class MaterialServiceImpl implements MaterialService {
     @Autowired private MaterialRepository materialRepository;
     @Autowired private GitRepositoryContentExtractor gitRepositoryContentExtractor;
     @Autowired private CategoriaService categoriaService;
+    private ClassifierResultService classifierResultService;
 
-    public MaterialServiceImpl() { }
+    public MaterialServiceImpl(ClassifierResultService classifierResultService) {
+        this.classifierResultService = classifierResultService;
+    }
+
+    // verifica o valor minimo obrigatório para a classificação ser válida
+    private boolean isValidCategoria(float punctuationCategory){
+        final float minimumTrashold = 7F;
+        return (punctuationCategory >= minimumTrashold);
+    }
 
     @Override
     public Material save(Material material) {
@@ -36,6 +47,25 @@ public class MaterialServiceImpl implements MaterialService {
         List<String> arquivosExtraidos = gitRepositoryContentExtractor.extractContentRepository(linkRepositorio);
         material.setArquivosRepositorio(arquivosExtraidos);
         material.setTimestampCriacao(ZonedDateTime.now(ZoneId.systemDefault())); //setting atual time);
+
+        Categoria bdCategoria = categoriaService.findByName("Banco de Dados").get();
+        Categoria pooCategoria = categoriaService.findByName("Programação Orientada a Objeto").get();
+        Categoria lmCategoria = categoriaService.findByName("Linguagem de Marcação").get();
+        Categoria tsCategoria = categoriaService.findByName("Teste de Software").get();
+        Categoria lsCategoria = categoriaService.findByName("Linguagem de Script").get();
+
+        ResultClassifier resultClassifier = classifierResultService.getResultClassification(arquivosExtraidos);
+        bdCategoria.setPontuacaoFinalClassificacao(resultClassifier.getBancoDadosRanking());
+        pooCategoria.setPontuacaoFinalClassificacao(resultClassifier.getProgramacaoOrientadaObjetoRanking());
+        lmCategoria.setPontuacaoFinalClassificacao(resultClassifier.getLinguagemMarcacaoRanking());
+        tsCategoria.setPontuacaoFinalClassificacao(resultClassifier.getTesteSoftwareRanking());
+        lsCategoria.setPontuacaoFinalClassificacao(resultClassifier.getLinguagemScriptRanking());
+
+        material.addCategoria(bdCategoria);
+        material.addCategoria(pooCategoria);
+        material.addCategoria(lmCategoria);
+        material.addCategoria(tsCategoria);
+        material.addCategoria(lsCategoria);
 
         log.debug("Request to save Material : {}", material);
         return materialRepository.save(material);
@@ -65,30 +95,30 @@ public class MaterialServiceImpl implements MaterialService {
         return materialRepository.search(query);
     }
 
-    @Override
-    public Material addCategory(String materialId, String categoriaId) {
-        Optional<Categoria> categoriaOptional = categoriaService.findOne(categoriaId);
-        Optional<Material> materialOptional = materialRepository.findById(materialId);
-        if (materialOptional.isPresent()){
-            Material material = materialOptional.get();
-            if (categoriaOptional.isPresent()){
-                if (existsByIdAndAndCategoriasIds(materialId, categoriaId) == null){
-                    material.addCategoria(categoriaId);
-                }
-            }
-            return materialRepository.save(material);
-        }
-        return new Material();
-    }
+//    @Override
+//    public Material addCategory(String materialId, String categoriaId) {
+//        Optional<Categoria> categoriaOptional = categoriaService.findOne(categoriaId);
+//        Optional<Material> materialOptional = materialRepository.findById(materialId);
+//        if (materialOptional.isPresent()){
+//            Material material = materialOptional.get();
+//            if (categoriaOptional.isPresent()){
+//                if (existsByIdAndAndCategoriasIds(materialId, categoriaId) == null){
+//                    material.addCategoria(categoriaId);
+//                }
+//            }
+//            return materialRepository.save(material);
+//        }
+//        return new Material();
+//    }
 
-    @Override
-    public Iterable<Material> findMaterialsByCategoriasIds(String categoriaId) {
-        return materialRepository.findMaterialsByCategoriasIds(categoriaId);
-    }
-
-    private Material existsByIdAndAndCategoriasIds(String materialId, String categoriaId) {
-        return materialRepository.existsByIdAndAndCategoriasIds(materialId, categoriaId);
-    }
+//    @Override
+//    public Iterable<Material> findMaterialsByCategoriasIds(String categoriaId) {
+//        return materialRepository.findMaterialsByCategoriasIds(categoriaId);
+//    }
+//
+//    private Material existsByIdAndAndCategoriasIds(String materialId, String categoriaId) {
+//        return materialRepository.existsByIdAndAndCategoriasIds(materialId, categoriaId);
+//    }
 
     @Override
     @Transactional(readOnly = true)

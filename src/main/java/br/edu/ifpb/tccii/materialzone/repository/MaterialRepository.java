@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MaterialRepository extends ElasticsearchRepository<Material, String> {
 
-    Material existsByIdAndAndCategoriasIds(String materialId, String categoriaId);
-    Iterable<Material> findMaterialsByCategoriasIds(String categoriaId);
+//    Material existsByIdAndAndCategoriasIds(String materialId, String categoriaId);
+//    Iterable<Material> findMaterialsByCategoriasIds(String categoriaId);
 
 }

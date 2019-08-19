@@ -21,15 +21,15 @@ public class Material {
     private String descricao;
     private ZonedDateTime timestampCriacao;
     private List<String> arquivosRepositorio;
-    private List<String> categoriasIds;
+    private List<Categoria> categorias;
 
     public Material(){ //For Spring Data
-        this.categoriasIds = new ArrayList<>();
+        this.categorias = new ArrayList<>();
         this.arquivosRepositorio = new ArrayList<>();
     }
 
-    public boolean addCategoria(String categoriaId){
-        return this.categoriasIds.add(categoriaId);
+    public boolean addCategoria(Categoria categoria){
+        return this.categorias.add(categoria);
     }
 
 }
