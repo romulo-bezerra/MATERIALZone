@@ -1,12 +1,8 @@
 package br.edu.ifpb.tccii.materialzone.service;
 
-import br.edu.ifpb.tccii.materialzone.abstration.CategoriaService;
 import br.edu.ifpb.tccii.materialzone.abstration.GitRepositoryContentExtractor;
 import br.edu.ifpb.tccii.materialzone.abstration.MaterialService;
-import br.edu.ifpb.tccii.materialzone.domain.Categoria;
 import br.edu.ifpb.tccii.materialzone.domain.Material;
-import br.edu.ifpb.tccii.materialzone.integration.service.ClassifierResultService;
-import br.edu.ifpb.tccii.materialzone.integration.dto.ResultClassifier;
 import br.edu.ifpb.tccii.materialzone.repository.MaterialRepository;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -27,12 +23,8 @@ public class MaterialServiceImpl implements MaterialService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired private MaterialRepository materialRepository;
     @Autowired private GitRepositoryContentExtractor gitRepositoryContentExtractor;
-    @Autowired private CategoriaService categoriaService;
-    private ClassifierResultService classifierResultService;
 
-    public MaterialServiceImpl(ClassifierResultService classifierResultService) {
-        this.classifierResultService = classifierResultService;
-    }
+    public MaterialServiceImpl() { }
 
     // verifica o valor minimo obrigatório para a classificação ser válida
     private boolean isValidCategoria(float punctuationCategory){
@@ -47,26 +39,6 @@ public class MaterialServiceImpl implements MaterialService {
         List<String> arquivosExtraidos = gitRepositoryContentExtractor.extractContentRepository(linkRepositorio);
         material.setArquivosRepositorio(arquivosExtraidos);
         material.setTimestampCriacao(ZonedDateTime.now(ZoneId.systemDefault())); //setting atual time);
-
-        Categoria bdCategoria = categoriaService.findByName("Banco de Dados").get();
-        Categoria pooCategoria = categoriaService.findByName("Programação Orientada a Objeto").get();
-        Categoria lmCategoria = categoriaService.findByName("Linguagem de Marcação").get();
-        Categoria tsCategoria = categoriaService.findByName("Teste de Software").get();
-        Categoria lsCategoria = categoriaService.findByName("Linguagem de Script").get();
-
-        ResultClassifier resultClassifier = classifierResultService.getResultClassification(arquivosExtraidos);
-        bdCategoria.setPontuacaoFinalClassificacao(resultClassifier.getBancoDadosRanking());
-        pooCategoria.setPontuacaoFinalClassificacao(resultClassifier.getProgramacaoOrientadaObjetoRanking());
-        lmCategoria.setPontuacaoFinalClassificacao(resultClassifier.getLinguagemMarcacaoRanking());
-        tsCategoria.setPontuacaoFinalClassificacao(resultClassifier.getTesteSoftwareRanking());
-        lsCategoria.setPontuacaoFinalClassificacao(resultClassifier.getLinguagemScriptRanking());
-
-        material.addCategoria(bdCategoria);
-        material.addCategoria(pooCategoria);
-        material.addCategoria(lmCategoria);
-        material.addCategoria(tsCategoria);
-        material.addCategoria(lsCategoria);
-
         log.debug("Request to save Material : {}", material);
         return materialRepository.save(material);
     }
