@@ -26,12 +26,6 @@ public class MaterialServiceImpl implements MaterialService {
 
     public MaterialServiceImpl() { }
 
-    // verifica o valor minimo obrigatório para a classificação ser válida
-    private boolean isValidCategoria(float punctuationCategory){
-        final float minimumTrashold = 7F;
-        return (punctuationCategory >= minimumTrashold);
-    }
-
     @Override
     public Material save(Material material) {
         //Extraindo conteúdo
@@ -67,30 +61,19 @@ public class MaterialServiceImpl implements MaterialService {
         return materialRepository.search(query);
     }
 
-//    @Override
-//    public Material addCategory(String materialId, String categoriaId) {
-//        Optional<Categoria> categoriaOptional = categoriaService.findOne(categoriaId);
-//        Optional<Material> materialOptional = materialRepository.findById(materialId);
-//        if (materialOptional.isPresent()){
-//            Material material = materialOptional.get();
-//            if (categoriaOptional.isPresent()){
-//                if (existsByIdAndAndCategoriasIds(materialId, categoriaId) == null){
-//                    material.addCategoria(categoriaId);
-//                }
-//            }
-//            return materialRepository.save(material);
-//        }
-//        return new Material();
-//    }
+    @Override
+    public Iterable<Material> findMaterialsByNameCategories(String nameCategory) {
+        log.debug("Request to get all Materiais by category");
+        QueryBuilder query = QueryBuilders.boolQuery()
+                .should(QueryBuilders.queryStringQuery(nameCategory)
+                        .lenient(true)
+                        .field("categorias.nome"))
+                .should(QueryBuilders.queryStringQuery("*" + nameCategory + "*")
+                        .lenient(true)
+                        .field("categorias.nome"));
 
-//    @Override
-//    public Iterable<Material> findMaterialsByCategoriasIds(String categoriaId) {
-//        return materialRepository.findMaterialsByCategoriasIds(categoriaId);
-//    }
-//
-//    private Material existsByIdAndAndCategoriasIds(String materialId, String categoriaId) {
-//        return materialRepository.existsByIdAndAndCategoriasIds(materialId, categoriaId);
-//    }
+        return materialRepository.search(query);
+    }
 
     @Override
     @Transactional(readOnly = true)

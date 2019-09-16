@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -39,29 +37,22 @@ public class MaterialResource {
     @PostMapping("/materiais")
     public ResponseEntity<Material> createMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
         log.debug("REST request to save Material : {}", material);
-
-//        String a = "public void staic main interface abstract final string";
-
-
         Material result = materialService.save(material);
 
-//        List<String> s = new ArrayList<>();
-//        s.add(a);
-        ResultClassifier resultClassifier = classifierResultService.getResultClassification(result.getArquivosRepositorio().toString());
+        ResultClassifier resultClassifier = classifierResultService.getResultClassification(result.getArquivosRepositorio());
         Categoria bdCategoria = insertBancoDadosCategory(resultClassifier.getBancoDadosRanking());
         Categoria pooCategoria = insertProgramacaoOrientadaObjetoCategory(resultClassifier.getProgramacaoOrientadaObjetoRanking());
         Categoria lmCategoria = insertLinguagemMarcacaoCategory(resultClassifier.getLinguagemMarcacaoRanking());
         Categoria tsCategoria = insertTesteSoftwareCategory(resultClassifier.getTesteSoftwareRanking());
         Categoria lsCategoria = insertLinguagemScriptCategory(resultClassifier.getLinguagemScriptRanking());
 
-//        System.out.println("Poo => " + pooCategoria);
-
-        material.addCategoria(bdCategoria);
-        material.addCategoria(pooCategoria);
-        material.addCategoria(lmCategoria);
-        material.addCategoria(tsCategoria);
-        material.addCategoria(lsCategoria);
-//
+        // valor minimo obrigatório para a classificação ser válida
+        float minimumTrashold = 0.7F;
+        if (bdCategoria.getPontuacaoFinalClassificacao() >= minimumTrashold) material.addCategoria(bdCategoria);
+        if (pooCategoria.getPontuacaoFinalClassificacao() >= minimumTrashold) material.addCategoria(pooCategoria);
+        if (lmCategoria.getPontuacaoFinalClassificacao() >= minimumTrashold) material.addCategoria(lmCategoria);
+        if (tsCategoria.getPontuacaoFinalClassificacao() >= minimumTrashold) material.addCategoria(tsCategoria);
+        if (lsCategoria.getPontuacaoFinalClassificacao() >= minimumTrashold) material.addCategoria(lsCategoria);
         materialService.save(result);
 
         return ResponseEntity.created(new URI("/api/materiais/" + result.getId()))
@@ -92,11 +83,11 @@ public class MaterialResource {
 //        return materialService.existsByIdAndAndCategoriasIds(materialId, categoriaId);
 //    }
 
-//    @GetMapping("/materiais/categoria/{categoriaId}")
-//    public ResponseEntity<Iterable<Material>> findMaterialsByCategoriasIds(@PathVariable final String categoriaId){
-//        log.debug("REST request to get all Materiais by categoriaId");
-//        return ResponseEntity.ok().body(materialService.findMaterialsByCategoriasIds(categoriaId));
-//    }
+    @GetMapping("/materiais/categoria/{nome}")
+    public ResponseEntity<Iterable<Material>> findMaterialsByNameCategories(@PathVariable final String nome){
+        log.debug("REST request to get all Materiais by name category");
+        return ResponseEntity.ok().body(materialService.findMaterialsByNameCategories(nome));
+    }
 
     @PutMapping("/materiais")
     public ResponseEntity<Material> updateMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
