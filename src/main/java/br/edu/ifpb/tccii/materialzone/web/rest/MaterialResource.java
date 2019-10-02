@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -42,6 +43,7 @@ public class MaterialResource {
     }
 
     @PostMapping("/materiais")
+    @PreAuthorize("hasRole('PROFESSOR')")
     @ApiOperation(value = "Cria um novo material")
     public ResponseEntity<Material> createMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
         log.debug("REST request to save Material : {}", material);
@@ -79,6 +81,7 @@ public class MaterialResource {
 
     @PutMapping("/materiais")
     @ApiOperation(value = "Atualiza um material existente")
+    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<Material> updateMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
         log.debug("REST request to update Material : {}", material);
         if (material.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -88,6 +91,7 @@ public class MaterialResource {
 
     @DeleteMapping("/materiais/{id}")
     @ApiOperation(value = "Deleta um material dado seu ID")
+    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<Void> deleteMaterial(@PathVariable String id) {
         log.debug("REST request to delete Material : {}", id);
         Optional<Material> material = materialService.findOne(id);
@@ -100,6 +104,7 @@ public class MaterialResource {
 
     @GetMapping("/materiais")
     @ApiOperation(value = "Recupera todos os materias")
+    @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<List<Material>> findAllWithPagination(@RequestParam("pag") int pag) {
         log.debug("REST request to get all Materiais");
         PageRequest pageRequest = PageRequest.of(pag, 10);
@@ -109,7 +114,8 @@ public class MaterialResource {
 
     @GetMapping("/materiais/categoria/{nome}")
     @ApiOperation(value = "Recupera todos os materiais dado o nome da categoria")
-    public ResponseEntity<List<Material>> findMaterialsByNameCategories(@PathVariable final String nome, @RequestParam("pag") int pag){
+    @PreAuthorize("hasRole('ALUNO')")
+    public ResponseEntity<List<Material>> findMaterialsByNameCategoriesWithPagination(@PathVariable final String nome, @RequestParam("pag") int pag){
         log.debug("REST request to get all Materiais by name category");
         PageRequest pageRequest = PageRequest.of(pag, 10);
         String nomeProcessed = removerAcentos(nome);
@@ -118,8 +124,9 @@ public class MaterialResource {
     }
 
     @GetMapping("/materiais/textsearch/{pieceTitleOrDescription}")
+    @PreAuthorize("hasRole('ALUNO')")
     @ApiOperation(value = "Recupera todos os materias dado o parte do título ou descrição")
-    public ResponseEntity<List<Material>> findAllByTituloOrDescricao(@PathVariable String pieceTitleOrDescription, @RequestParam("pag") int pag) {
+    public ResponseEntity<List<Material>> findAllByTitleOrDescriptionWithPagination(@PathVariable String pieceTitleOrDescription, @RequestParam("pag") int pag) {
         log.debug("REST request to get all Materiais by title or description");
         PageRequest pageRequest = PageRequest.of(pag, 10);
         Page<Material> materialsPag = materialService.findAllMaterialsByTitleOrDescription(pieceTitleOrDescription, pageRequest);
@@ -128,6 +135,7 @@ public class MaterialResource {
 
     @GetMapping("/materiais/{id}")
     @ApiOperation(value = "Recupera um material dado seu ID")
+    @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<Material> getMaterial(@PathVariable String id) {
         log.debug("REST request to get Material : {}", id);
         Optional<Material> material = materialService.findOne(id);

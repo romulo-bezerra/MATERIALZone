@@ -8,12 +8,16 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -41,6 +45,7 @@ public class UsuarioResource {
 
     @PutMapping("/usuarios")
     @ApiOperation(value = "Atualiza os daddos de usuário")
+    @PreAuthorize("hasAnyRole('ALUNO', 'PROFESSOR')")
     public ResponseEntity<Usuario> updateUsuario(@Valid @RequestBody Usuario usuario) throws URISyntaxException {
         log.debug("REST request to update Usuario : {}", usuario);
         if (usuario.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -50,9 +55,11 @@ public class UsuarioResource {
 
     @GetMapping("/usuarios")
     @ApiOperation(value = "Recupera todos os usuários")
-    public ResponseEntity<Iterable<Usuario>> getAllUsuarios() {
+    public ResponseEntity<List<Usuario>> getAllUsuarios(@RequestParam("pag") int pag) {
         log.debug("REST request to get all Usuarios");
-        return ResponseEntity.ok().body(usuarioService.findAll());
+        PageRequest pageRequest = PageRequest.of(pag, 10);
+        Page<Usuario> usersPag = usuarioService.findAll(pageRequest);
+        return ResponseEntity.ok().body(usersPag.getContent());
     }
 
     @GetMapping("/usuarios/{id}")
@@ -66,6 +73,7 @@ public class UsuarioResource {
 
     @DeleteMapping("/usuarios/{id}")
     @ApiOperation(value = "Deleta um usuário dado o ID")
+    @PreAuthorize("hasAnyRole('ALUNO', 'PROFESSOR')")
     public ResponseEntity<Void> deleteUsuario(@PathVariable String id) {
         log.debug("REST request to delete Usuario : {}", id);
         Optional<Usuario> usuario = usuarioService.findOne(id);

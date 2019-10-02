@@ -1,37 +1,32 @@
-//package br.edu.ifpb.tccii.materialzone.config;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.builders.WebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-//import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-//
-//@Configuration
-//@EnableWebSecurity
-//public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-//
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.csrf().disable().authorizeRequests()
-//                .antMatchers(HttpMethod.GET, "/api/materiais").permitAll()
-//                .anyRequest().authenticated()
-//                .and().formLogin().permitAll()
-//                .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
-//    }
-//
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication().withUser("admin").password("admin123").roles("ADMIN");
-////        auth.inMemoryAuthentication().withUser("teacher").password("teacher123").roles("TEACHER");
-////        auth.inMemoryAuthentication().withUser("student").password("student123").roles("STUDENT");
-//    }
-//
-//    @Override
-//    public void configure(WebSecurity web) throws Exception {
-//        web.ignoring().antMatchers("/materialize/**", "/style/**");
-//    }
-//}
+package br.edu.ifpb.tccii.materialzone.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final String PROFESSOR_ROLE = "PROFESSOR";
+    private final String ALUNO_ROLE = "ALUNO";
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .anyRequest().authenticated()
+                .and().httpBasic()
+                .and().csrf().disable();
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .withUser("romulo").password("{noop}soares").roles(ALUNO_ROLE)
+                .and()
+                .withUser("Deus").password("{noop}meajude").roles(ALUNO_ROLE, PROFESSOR_ROLE);
+    }
+}
