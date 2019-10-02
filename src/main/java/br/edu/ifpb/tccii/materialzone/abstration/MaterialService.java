@@ -9,11 +9,10 @@ import java.util.Optional;
 public interface MaterialService {
 
     Material save(Material material);
-    Iterable<Material> findAll();
     Optional<Material> findOne(String id);
-    void delete(String id);
-    Iterable<Material> findAllMaterialsByTitleOrDescription(String text);
-    Iterable<Material> findMaterialsByNameCategories(String nameCategory);
+    Page<Material> findAllMaterialsByTitleOrDescription(String text, Pageable pageable);
+    Page<Material> findMaterialsByNameCategories(String nameCategory, Pageable pageable);
     Page<Material> findAll(Pageable pageable);
+    void delete(String id);
 
 }

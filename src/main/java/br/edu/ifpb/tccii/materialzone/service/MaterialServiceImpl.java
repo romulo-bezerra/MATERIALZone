@@ -41,14 +41,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<Material> findAll() {
-        log.debug("Request to get all Materiais");
-        return materialRepository.findAll();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Iterable<Material> findAllMaterialsByTitleOrDescription(String text) {
+    public Page<Material> findAllMaterialsByTitleOrDescription(String text, Pageable pageable) {
         log.debug("Request to get all Materiais");
         QueryBuilder query = QueryBuilders.boolQuery()
                 .should(QueryBuilders.queryStringQuery(text)
@@ -60,11 +53,11 @@ public class MaterialServiceImpl implements MaterialService {
                         .field("titulo")
                         .field("descricao"));
 
-        return materialRepository.search(query);
+        return materialRepository.search(query, pageable);
     }
 
     @Override
-    public Iterable<Material> findMaterialsByNameCategories(String nameCategory) {
+    public Page<Material> findMaterialsByNameCategories(String nameCategory, Pageable pageable) {
         log.debug("Request to get all Materiais by category");
         QueryBuilder query = QueryBuilders.boolQuery()
                 .should(QueryBuilders.queryStringQuery(nameCategory)
@@ -74,18 +67,13 @@ public class MaterialServiceImpl implements MaterialService {
                         .lenient(true)
                         .field("categorias.nome"));
 
-        return materialRepository.search(query);
+        return materialRepository.search(query, pageable);
     }
 
     @Override
     public Page<Material> findAll(Pageable pageable) {
         return materialRepository.findAll(pageable);
     }
-
-//    @Override
-//    public Page<Material> findAll(Pageable pageable) {
-//        return materialRepository.findAll(pageable);
-//    }
 
     @Override
     @Transactional(readOnly = true)

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,28 +98,32 @@ public class MaterialResource {
         return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Materias id %d inexists", id))).build();
     }
 
-
-    @GetMapping("/materiais/categoria/{nome}")
-    @ApiOperation(value = "Recupera todos os materiais dado o nome da categoria")
-    public ResponseEntity<Iterable<Material>> findMaterialsByNameCategories(@PathVariable final String nome){
-        log.debug("REST request to get all Materiais by name category");
-        return ResponseEntity.ok().body(materialService.findMaterialsByNameCategories(nome));
-    }
-
-    @GetMapping("/materiais/pagina/{pag}")
+    @GetMapping("/materiais")
     @ApiOperation(value = "Recupera todos os materias")
-    public ResponseEntity<List<Material>> findAllWithPagination(@PathVariable int pag) {
+    public ResponseEntity<List<Material>> findAllWithPagination(@RequestParam("pag") int pag) {
         log.debug("REST request to get all Materiais");
         PageRequest pageRequest = PageRequest.of(pag, 10);
         Page<Material> materialsPag = materialService.findAll(pageRequest);
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
-    @GetMapping("/materiais/textsearch/{text}")
+    @GetMapping("/materiais/categoria/{nome}")
+    @ApiOperation(value = "Recupera todos os materiais dado o nome da categoria")
+    public ResponseEntity<List<Material>> findMaterialsByNameCategories(@PathVariable final String nome, @RequestParam("pag") int pag){
+        log.debug("REST request to get all Materiais by name category");
+        PageRequest pageRequest = PageRequest.of(pag, 10);
+        String nomeProcessed = removerAcentos(nome);
+        Page<Material> materialsPag = materialService.findMaterialsByNameCategories(nomeProcessed, pageRequest);
+        return ResponseEntity.ok().body(materialsPag.getContent());
+    }
+
+    @GetMapping("/materiais/textsearch/{pieceTitleOrDescription}")
     @ApiOperation(value = "Recupera todos os materias dado o parte do título ou descrição")
-    public ResponseEntity<Iterable<Material>> findAllByTituloOrDescricao(@PathVariable String text) {
+    public ResponseEntity<List<Material>> findAllByTituloOrDescricao(@PathVariable String pieceTitleOrDescription, @RequestParam("pag") int pag) {
         log.debug("REST request to get all Materiais by title or description");
-        return ResponseEntity.ok().body(materialService.findAllMaterialsByTitleOrDescription(text));
+        PageRequest pageRequest = PageRequest.of(pag, 10);
+        Page<Material> materialsPag = materialService.findAllMaterialsByTitleOrDescription(pieceTitleOrDescription, pageRequest);
+        return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
     @GetMapping("/materiais/{id}")
@@ -136,6 +141,11 @@ public class MaterialResource {
         categoria.setNome(nameCategory);
         categoria.setPontuacaoFinalClassificacao(punctuationRankingCategory);
         return categoriaService.save(categoria);
+    }
+
+    final private String removerAcentos(String valorAcentuado){
+        return Normalizer.normalize(valorAcentuado, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "");
     }
 
 }
