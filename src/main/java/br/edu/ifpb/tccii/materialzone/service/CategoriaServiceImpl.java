@@ -7,9 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
@@ -24,32 +21,4 @@ public class CategoriaServiceImpl implements CategoriaService {
         log.debug("Request to save Categoria : {}", categoria);
         return categoriaRepository.save(categoria);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Iterable<Categoria> findAll() {
-        log.debug("Request to get all Categorias");
-        return categoriaRepository.findAll();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Categoria> findOne(String id) {
-        log.debug("Request to get Categoria : {}", id);
-        return categoriaRepository.findById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Categoria> findByName(String name) {
-        log.debug("Request to get Categoria : {}", name);
-        return categoriaRepository.findByNome(name);
-    }
-
-    @Override
-    public void delete(String id) {
-        log.debug("Request to delete Categoria : {}", id);
-        categoriaRepository.deleteById(id);
-    }
-
 }

@@ -11,9 +11,6 @@ import java.util.List;
 @FeignClient(name = "DataCleanerService", url = "http://localhost:5000/sortdata")
 public interface ClassifierResultService {
 
-//    @GetMapping("/{content}")
-//    ResultClassifier getResultClassification(@PathVariable String content);
-
     @GetMapping("")
     @ResponseBody
     ResultClassifier getResultClassification(@RequestParam List<String> content);
