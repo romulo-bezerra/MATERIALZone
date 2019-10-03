@@ -104,7 +104,7 @@ public class MaterialResource {
 
     @GetMapping("/materiais")
     @ApiOperation(value = "Recupera todos os materias")
-    @PreAuthorize("hasRole('ALUNO')")
+//    @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<List<Material>> findAllWithPagination(@RequestParam("pag") int pag) {
         log.debug("REST request to get all Materiais");
         PageRequest pageRequest = PageRequest.of(pag, 10);

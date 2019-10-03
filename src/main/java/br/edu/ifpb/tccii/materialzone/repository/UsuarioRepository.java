@@ -1,6 +1,10 @@
 package br.edu.ifpb.tccii.materialzone.repository;
 
-import br.edu.ifpb.tccii.materialzone.domain.Usuario;
+import br.edu.ifpb.tccii.materialzone.domain.Aluno;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-public interface UsuarioRepository extends ElasticsearchRepository<Usuario, String> { }
+public interface UsuarioRepository extends ElasticsearchRepository<Aluno, String> {
+
+    Aluno findByEmail(String email);
+
+}

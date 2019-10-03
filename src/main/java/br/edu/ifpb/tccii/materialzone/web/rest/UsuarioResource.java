@@ -1,7 +1,7 @@
 package br.edu.ifpb.tccii.materialzone.web.rest;
 
 import br.edu.ifpb.tccii.materialzone.abstration.UsuarioService;
-import br.edu.ifpb.tccii.materialzone.domain.Usuario;
+import br.edu.ifpb.tccii.materialzone.domain.Aluno;
 import br.edu.ifpb.tccii.materialzone.web.errors.BadRequestAlertException;
 import br.edu.ifpb.tccii.materialzone.web.util.HeaderUtil;
 import io.swagger.annotations.Api;
@@ -36,9 +36,9 @@ public class UsuarioResource {
 
     @PostMapping("/usuarios")
     @ApiOperation(value = "Cria um novo usuário")
-    public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody Usuario usuario) throws URISyntaxException {
+    public ResponseEntity<Aluno> createUsuario(@Valid @RequestBody Aluno usuario) throws URISyntaxException {
         log.debug("REST request to save Usuario : {}", usuario);
-        Usuario result = usuarioService.save(usuario);
+        Aluno result = usuarioService.save(usuario);
         return ResponseEntity.created(new URI("/api/usuarios/" + result.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
     }
@@ -46,27 +46,27 @@ public class UsuarioResource {
     @PutMapping("/usuarios")
     @ApiOperation(value = "Atualiza os daddos de usuário")
     @PreAuthorize("hasAnyRole('ALUNO', 'PROFESSOR')")
-    public ResponseEntity<Usuario> updateUsuario(@Valid @RequestBody Usuario usuario) throws URISyntaxException {
+    public ResponseEntity<Aluno> updateUsuario(@Valid @RequestBody Aluno usuario) throws URISyntaxException {
         log.debug("REST request to update Usuario : {}", usuario);
         if (usuario.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        Usuario result = usuarioService.save(usuario);
+        Aluno result = usuarioService.save(usuario);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, usuario.getId())).body(result);
     }
 
     @GetMapping("/usuarios")
     @ApiOperation(value = "Recupera todos os usuários")
-    public ResponseEntity<List<Usuario>> getAllUsuarios(@RequestParam("pag") int pag) {
+    public ResponseEntity<List<Aluno>> getAllUsuarios(@RequestParam("pag") int pag) {
         log.debug("REST request to get all Usuarios");
         PageRequest pageRequest = PageRequest.of(pag, 10);
-        Page<Usuario> usersPag = usuarioService.findAll(pageRequest);
+        Page<Aluno> usersPag = usuarioService.findAll(pageRequest);
         return ResponseEntity.ok().body(usersPag.getContent());
     }
 
     @GetMapping("/usuarios/{id}")
     @ApiOperation(value = "Recupera um usuário dado o ID")
-    public ResponseEntity<Usuario> getUsuario(@PathVariable String id) {
+    public ResponseEntity<Aluno> getUsuario(@PathVariable String id) {
         log.debug("REST request to get Usuario : {}", id);
-        Optional<Usuario> usuario = usuarioService.findOne(id);
+        Optional<Aluno> usuario = usuarioService.findOne(id);
         if (usuario.isPresent()) return ResponseEntity.ok().body(usuario.get());
         return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Usuario id %d inexists", id))).build();
     }
@@ -76,7 +76,7 @@ public class UsuarioResource {
     @PreAuthorize("hasAnyRole('ALUNO', 'PROFESSOR')")
     public ResponseEntity<Void> deleteUsuario(@PathVariable String id) {
         log.debug("REST request to delete Usuario : {}", id);
-        Optional<Usuario> usuario = usuarioService.findOne(id);
+        Optional<Aluno> usuario = usuarioService.findOne(id);
         if (usuario.isPresent()) {
             usuarioService.delete(id);
             return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
