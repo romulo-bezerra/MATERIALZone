@@ -14,6 +14,7 @@ public class Categoria {
     private String id;
     private String nome;
     private double pontuacaoFinalClassificacao;
+//    private String materialId;
 
     public Categoria() { } //For Spring Data
 

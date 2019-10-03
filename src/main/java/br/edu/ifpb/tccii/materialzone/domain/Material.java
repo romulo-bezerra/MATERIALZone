@@ -19,6 +19,7 @@ public class Material {
     private String linkRepositorio;
     private String titulo;
     private String descricao;
+    private String professorId;
     private ZonedDateTime timestampCriacao;
     private List<String> arquivosRepositorio;
     private List<Categoria> categorias;

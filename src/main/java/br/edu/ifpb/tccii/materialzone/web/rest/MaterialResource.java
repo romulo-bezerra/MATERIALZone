@@ -16,18 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/material")
 @Api(value = "MaterialResource Controller", description = "Serviços pertinentes à materiais")
 public class MaterialResource {
 
@@ -42,11 +42,12 @@ public class MaterialResource {
         this.classifierResultService = classifierResultService;
     }
 
-    @PostMapping("/materiais")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @PostMapping("")
     @ApiOperation(value = "Cria um novo material")
     public ResponseEntity<Material> createMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
         log.debug("REST request to save Material : {}", material);
+
+        System.out.println("TESTE: " + ((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getName());
 
         Material result = materialService.save(material); //salva para extracao de conteudo
 
@@ -79,9 +80,8 @@ public class MaterialResource {
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
     }
 
-    @PutMapping("/materiais")
+    @PutMapping("")
     @ApiOperation(value = "Atualiza um material existente")
-    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<Material> updateMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
         log.debug("REST request to update Material : {}", material);
         if (material.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -89,10 +89,9 @@ public class MaterialResource {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, material.getId())).body(result);
     }
 
-    @DeleteMapping("/materiais/{id}")
+    @DeleteMapping("")
     @ApiOperation(value = "Deleta um material dado seu ID")
-    @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<Void> deleteMaterial(@PathVariable String id) {
+    public ResponseEntity<Void> deleteMaterial(@RequestParam("id") String id) {
         log.debug("REST request to delete Material : {}", id);
         Optional<Material> material = materialService.findOne(id);
         if (material.isPresent()) {
@@ -102,9 +101,8 @@ public class MaterialResource {
         return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Materias id %d inexists", id))).build();
     }
 
-    @GetMapping("/materiais")
+    @GetMapping("")
     @ApiOperation(value = "Recupera todos os materias")
-//    @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<List<Material>> findAllWithPagination(@RequestParam("pag") int pag) {
         log.debug("REST request to get all Materiais");
         PageRequest pageRequest = PageRequest.of(pag, 10);
@@ -112,30 +110,26 @@ public class MaterialResource {
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
-    @GetMapping("/materiais/categoria/{nome}")
+    @GetMapping("/categoria")
     @ApiOperation(value = "Recupera todos os materiais dado o nome da categoria")
-    @PreAuthorize("hasRole('ALUNO')")
-    public ResponseEntity<List<Material>> findMaterialsByNameCategoriesWithPagination(@PathVariable final String nome, @RequestParam("pag") int pag){
+    public ResponseEntity<List<Material>> findMaterialsByNameCategoriesWithPagination(@RequestParam("nome") String nome, @RequestParam("pag") int pag){
         log.debug("REST request to get all Materiais by name category");
         PageRequest pageRequest = PageRequest.of(pag, 10);
-        String nomeProcessed = removerAcentos(nome);
-        Page<Material> materialsPag = materialService.findMaterialsByNameCategories(nomeProcessed, pageRequest);
+        Page<Material> materialsPag = materialService.findMaterialsByNameCategories(nome, pageRequest);
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
-    @GetMapping("/materiais/textsearch/{pieceTitleOrDescription}")
-    @PreAuthorize("hasRole('ALUNO')")
+    @GetMapping("/textsearch")
     @ApiOperation(value = "Recupera todos os materias dado o parte do título ou descrição")
-    public ResponseEntity<List<Material>> findAllByTitleOrDescriptionWithPagination(@PathVariable String pieceTitleOrDescription, @RequestParam("pag") int pag) {
+    public ResponseEntity<List<Material>> findAllByTitleOrDescriptionWithPagination(@RequestParam("pieceTitleOrDescription") String pieceTitleOrDescription, @RequestParam("pag") int pag) {
         log.debug("REST request to get all Materiais by title or description");
         PageRequest pageRequest = PageRequest.of(pag, 10);
         Page<Material> materialsPag = materialService.findAllMaterialsByTitleOrDescription(pieceTitleOrDescription, pageRequest);
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
-    @GetMapping("/materiais/{id}")
+    @GetMapping("/{id}")
     @ApiOperation(value = "Recupera um material dado seu ID")
-    @PreAuthorize("hasRole('ALUNO')")
     public ResponseEntity<Material> getMaterial(@PathVariable String id) {
         log.debug("REST request to get Material : {}", id);
         Optional<Material> material = materialService.findOne(id);
@@ -149,11 +143,6 @@ public class MaterialResource {
         categoria.setNome(nameCategory);
         categoria.setPontuacaoFinalClassificacao(punctuationRankingCategory);
         return categoriaService.save(categoria);
-    }
-
-    final private String removerAcentos(String valorAcentuado){
-        return Normalizer.normalize(valorAcentuado, Normalizer.Form.NFD)
-                .replaceAll("[^\\p{ASCII}]", "");
     }
 
 }

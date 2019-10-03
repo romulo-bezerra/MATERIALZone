@@ -20,7 +20,6 @@ import java.util.List;
 public class RoleResource {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private static final String ENTITY_NAME = "Role";
 
     @Autowired private RoleService roleService;
 

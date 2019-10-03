@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/usuario")
 @Api(value = "UsuarioResource Controller", description = "Serviços pertinentes à usuários")
 public class UsuarioResource {
 
@@ -34,7 +34,7 @@ public class UsuarioResource {
         this.usuarioService = usuarioService;
     }
 
-    @PostMapping("/usuarios")
+    @PostMapping("")
     @ApiOperation(value = "Cria um novo usuário")
     public ResponseEntity<Aluno> createUsuario(@Valid @RequestBody Aluno usuario) throws URISyntaxException {
         log.debug("REST request to save Usuario : {}", usuario);
@@ -43,7 +43,7 @@ public class UsuarioResource {
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
     }
 
-    @PutMapping("/usuarios")
+    @PutMapping("")
     @ApiOperation(value = "Atualiza os daddos de usuário")
     @PreAuthorize("hasAnyRole('ALUNO', 'PROFESSOR')")
     public ResponseEntity<Aluno> updateUsuario(@Valid @RequestBody Aluno usuario) throws URISyntaxException {
@@ -53,16 +53,14 @@ public class UsuarioResource {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, usuario.getId())).body(result);
     }
 
-    @GetMapping("/usuarios")
+    @GetMapping("")
     @ApiOperation(value = "Recupera todos os usuários")
-    public ResponseEntity<List<Aluno>> getAllUsuarios(@RequestParam("pag") int pag) {
+    public ResponseEntity<List<Aluno>> getAllUsuarios() {
         log.debug("REST request to get all Usuarios");
-        PageRequest pageRequest = PageRequest.of(pag, 10);
-        Page<Aluno> usersPag = usuarioService.findAll(pageRequest);
-        return ResponseEntity.ok().body(usersPag.getContent());
+        return ResponseEntity.ok().body(usuarioService.findAll());
     }
 
-    @GetMapping("/usuarios/{id}")
+    @GetMapping("/{id}")
     @ApiOperation(value = "Recupera um usuário dado o ID")
     public ResponseEntity<Aluno> getUsuario(@PathVariable String id) {
         log.debug("REST request to get Usuario : {}", id);
@@ -71,7 +69,7 @@ public class UsuarioResource {
         return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Usuario id %d inexists", id))).build();
     }
 
-    @DeleteMapping("/usuarios/{id}")
+    @DeleteMapping("/{id}")
     @ApiOperation(value = "Deleta um usuário dado o ID")
     @PreAuthorize("hasAnyRole('ALUNO', 'PROFESSOR')")
     public ResponseEntity<Void> deleteUsuario(@PathVariable String id) {
