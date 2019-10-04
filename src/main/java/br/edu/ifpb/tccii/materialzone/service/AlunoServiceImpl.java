@@ -5,6 +5,7 @@ import br.edu.ifpb.tccii.materialzone.domain.Aluno;
 import br.edu.ifpb.tccii.materialzone.repository.AlunoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,18 +18,16 @@ import java.util.Optional;
 public class AlunoServiceImpl implements AlunoService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private AlunoRepository alunoRepository;
+    @Autowired private AlunoRepository alunoRepository;
 
-    public AlunoServiceImpl(AlunoRepository alunoRepository) {
-        this.alunoRepository = alunoRepository;
-    }
+    public AlunoServiceImpl() { }
 
     public Aluno save(Aluno aluno) {
-        String password = aluno.getSenha();
+        log.debug("Request to save Aluno : {}", aluno);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String password = aluno.getSenha();
         String passwordEncoded = passwordEncoder.encode(password);
         aluno.setSenha(passwordEncoded);
-        log.debug("Request to save Aluno : {}", aluno);
         return alunoRepository.save(aluno);
     }
 
@@ -47,6 +46,12 @@ public class AlunoServiceImpl implements AlunoService {
     public void delete(String id) {
         log.debug("Request to delete Aluno : {}", id);
         alunoRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Aluno> findByEmail(String email) {
+        log.debug("Request to get Aluno by email: {}", email);
+        return alunoRepository.findByEmail(email);
     }
 
 }

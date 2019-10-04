@@ -12,5 +12,6 @@ public interface ProfessorService {
     Page<Professor> findAll(Pageable pageable);
     Optional<Professor> findOne(String id);
     void delete(String id);
+    Optional<Professor> findByEmail(String email);
 
 }

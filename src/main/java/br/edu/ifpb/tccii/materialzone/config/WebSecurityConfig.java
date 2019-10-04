@@ -2,6 +2,7 @@ package br.edu.ifpb.tccii.materialzone.config;
 
 import br.edu.ifpb.tccii.materialzone.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,10 +20,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/professor").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
                 .and().csrf().disable();
+
+//                .antMatchers(HttpMethod.POST, "/api/professor").anonymous()
+//                .antMatchers(HttpMethod.POST, "/api/aluno").permitAll()
 
 //                .anyRequest()
 //                .authenticated()

@@ -5,6 +5,7 @@ import br.edu.ifpb.tccii.materialzone.domain.Professor;
 import br.edu.ifpb.tccii.materialzone.repository.ProfessorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,18 +18,16 @@ import java.util.Optional;
 public class ProfessorServiceImpl implements ProfessorService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private ProfessorRepository professorRepository;
+    @Autowired private ProfessorRepository professorRepository;
 
-    public ProfessorServiceImpl(ProfessorRepository professorRepository) {
-        this.professorRepository = professorRepository;
-    }
+    public ProfessorServiceImpl() { }
 
     public Professor save(Professor professor) {
-        String password = professor.getSenha();
+        log.debug("Request to save Professor : {}", professor);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String password = professor.getSenha();
         String passwordEncoded = passwordEncoder.encode(password);
         professor.setSenha(passwordEncoded);
-        log.debug("Request to save Professor : {}", professor);
         return professorRepository.save(professor);
     }
 
@@ -47,6 +46,12 @@ public class ProfessorServiceImpl implements ProfessorService {
     public void delete(String id) {
         log.debug("Request to delete Professor : {}", id);
         professorRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Professor> findByEmail(String email) {
+        log.debug("Request to get Professor by email: {}", email);
+        return professorRepository.findByEmail(email);
     }
 
 }
