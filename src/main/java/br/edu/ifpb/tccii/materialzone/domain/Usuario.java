@@ -7,14 +7,14 @@ import org.springframework.data.elasticsearch.annotations.Document;
 
 @Data
 @AllArgsConstructor
-@Document(indexName = "categorias", type = "categoria")
-public class Categoria {
+@Document(indexName = "usuarios", type = "usuario")
+public class Usuario {
 
     @Id
-    private String id;
-    private String nome;
-    private double pontuacaoFinalClassificacao;
+    private String username;
+    private String password;
+    private boolean professor;
 
-    public Categoria() { } //For Spring Data
+    public Usuario() {} //For Spring Data
 
 }

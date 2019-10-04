@@ -1,15 +1,13 @@
 package br.edu.ifpb.tccii.materialzone.domain;
 
-import br.edu.ifpb.tccii.materialzone.domain.enumeration.Papel;
 import br.edu.ifpb.tccii.materialzone.domain.enumeration.Sexo;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 @Data
-@AllArgsConstructor
-@Document(indexName = "usuarios", type = "professor")
+@Document(indexName = "professores", type = "professor")
 public final class Professor {
 
     @Id

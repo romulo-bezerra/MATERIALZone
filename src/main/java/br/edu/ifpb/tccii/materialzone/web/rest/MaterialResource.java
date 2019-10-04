@@ -16,8 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,21 +32,19 @@ public class MaterialResource {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String ENTITY_NAME = "Material";
-    private MaterialService materialService;
+    @Autowired private MaterialService materialService;
     private ClassifierResultService classifierResultService;
     @Autowired private CategoriaService categoriaService;
 
-    public MaterialResource(MaterialService materialService, ClassifierResultService classifierResultService) {
-        this.materialService = materialService;
+    public MaterialResource(ClassifierResultService classifierResultService) {
         this.classifierResultService = classifierResultService;
     }
 
-    @PostMapping("")
+    @PostMapping("/professor")
     @ApiOperation(value = "Cria um novo material")
+    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<Material> createMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
         log.debug("REST request to save Material : {}", material);
-
-        System.out.println("TESTE: " + ((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getName());
 
         Material result = materialService.save(material); //salva para extracao de conteudo
 
@@ -80,7 +77,8 @@ public class MaterialResource {
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
     }
 
-    @PutMapping("")
+    @PutMapping("/professor")
+    @PreAuthorize("hasRole('PROFESSOR')")
     @ApiOperation(value = "Atualiza um material existente")
     public ResponseEntity<Material> updateMaterial(@Valid @RequestBody Material material) throws URISyntaxException {
         log.debug("REST request to update Material : {}", material);
@@ -89,9 +87,10 @@ public class MaterialResource {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, material.getId())).body(result);
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("/professor/{id}")
+    @PreAuthorize("hasRole('PROFESSOR')")
     @ApiOperation(value = "Deleta um material dado seu ID")
-    public ResponseEntity<Void> deleteMaterial(@RequestParam("id") String id) {
+    public ResponseEntity<Void> deleteMaterial(@PathVariable String id) {
         log.debug("REST request to delete Material : {}", id);
         Optional<Material> material = materialService.findOne(id);
         if (material.isPresent()) {
@@ -101,34 +100,38 @@ public class MaterialResource {
         return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Materias id %d inexists", id))).build();
     }
 
-    @GetMapping("")
+    @GetMapping("/aluno")
+    @PreAuthorize("hasRole('ALUNO')")
     @ApiOperation(value = "Recupera todos os materias")
-    public ResponseEntity<List<Material>> findAllWithPagination(@RequestParam("pag") int pag) {
+    public ResponseEntity<List<Material>> findAllWithPagination(@RequestParam("pagina") int pagina) {
         log.debug("REST request to get all Materiais");
-        PageRequest pageRequest = PageRequest.of(pag, 10);
+        PageRequest pageRequest = PageRequest.of(pagina, 10);
         Page<Material> materialsPag = materialService.findAll(pageRequest);
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
-    @GetMapping("/categoria")
+    @GetMapping("/aluno/categoria/{nome}")
+    @PreAuthorize("hasRole('ALUNO')")
     @ApiOperation(value = "Recupera todos os materiais dado o nome da categoria")
-    public ResponseEntity<List<Material>> findMaterialsByNameCategoriesWithPagination(@RequestParam("nome") String nome, @RequestParam("pag") int pag){
+    public ResponseEntity<List<Material>> findMaterialsByNameCategoriesWithPagination(@PathVariable final String nome, @RequestParam("pagina") int pagina){
         log.debug("REST request to get all Materiais by name category");
-        PageRequest pageRequest = PageRequest.of(pag, 10);
+        PageRequest pageRequest = PageRequest.of(pagina, 10);
         Page<Material> materialsPag = materialService.findMaterialsByNameCategories(nome, pageRequest);
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
-    @GetMapping("/textsearch")
+    @GetMapping("/aluno/textsearch/{pieceTitleOrDescription}")
+    @PreAuthorize("hasRole('ALUNO')")
     @ApiOperation(value = "Recupera todos os materias dado o parte do título ou descrição")
-    public ResponseEntity<List<Material>> findAllByTitleOrDescriptionWithPagination(@RequestParam("pieceTitleOrDescription") String pieceTitleOrDescription, @RequestParam("pag") int pag) {
+    public ResponseEntity<List<Material>> findAllByTitleOrDescriptionWithPagination(@PathVariable String pieceTitleOrDescription, @RequestParam("pagina") int pagina) {
         log.debug("REST request to get all Materiais by title or description");
-        PageRequest pageRequest = PageRequest.of(pag, 10);
+        PageRequest pageRequest = PageRequest.of(pagina, 10);
         Page<Material> materialsPag = materialService.findAllMaterialsByTitleOrDescription(pieceTitleOrDescription, pageRequest);
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/aluno/{id}")
+    @PreAuthorize("hasRole('ALUNO')")
     @ApiOperation(value = "Recupera um material dado seu ID")
     public ResponseEntity<Material> getMaterial(@PathVariable String id) {
         log.debug("REST request to get Material : {}", id);

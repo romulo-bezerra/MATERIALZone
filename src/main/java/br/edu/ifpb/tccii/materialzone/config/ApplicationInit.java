@@ -1,8 +1,11 @@
 package br.edu.ifpb.tccii.materialzone.config;
 
-import br.edu.ifpb.tccii.materialzone.abstration.RoleService;
-import br.edu.ifpb.tccii.materialzone.domain.Role;
-import br.edu.ifpb.tccii.materialzone.repository.UsuarioRepository;
+import br.edu.ifpb.tccii.materialzone.abstration.AlunoService;
+import br.edu.ifpb.tccii.materialzone.abstration.ProfessorService;
+import br.edu.ifpb.tccii.materialzone.abstration.UsuarioService;
+import br.edu.ifpb.tccii.materialzone.domain.Aluno;
+import br.edu.ifpb.tccii.materialzone.domain.Professor;
+import br.edu.ifpb.tccii.materialzone.domain.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -11,24 +14,39 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplicationInit implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired private RoleService roleService;
-    @Autowired private UsuarioRepository usuarioRepository;
-
-    final private String ROLE_PROFESSOR = "ROLE_PROFESSOR";
-    final private String ROLE_ALUNO = "ROLE_ALUNO";
+    @Autowired private UsuarioService usuarioService;
+    @Autowired private ProfessorService professorService;
+    @Autowired private AlunoService alunoService;
 
     public ApplicationInit() { }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
 
-        Role roleProfessor = new Role();
-        roleProfessor.setRole(ROLE_PROFESSOR);
-        Role roleAluno= new Role();
-        roleAluno.setRole(ROLE_ALUNO);
+//        Professor professor = new Professor();
+//        professor.setEmail("romulo");
+//        professor.setSenha("romulo");
+//
+//        Aluno aluno = new Aluno();
+//        aluno.setEmail("renan");
+//        aluno.setSenha("renan");
+//
+//        Professor professorSaved = professorService.save(professor);
+//        Aluno alunoSaved = alunoService.save(aluno);
+//
+//        Usuario usuarioProfessor = new Usuario();
+//        usuarioProfessor.setUsername(professorSaved.getEmail());
+//        usuarioProfessor.setPassword(professorSaved.getSenha());
+//        usuarioProfessor.setProfessor(true);
+//
+//        Usuario usuarioAluno = new Usuario();
+//        usuarioAluno.setUsername(alunoSaved.getEmail());
+//        usuarioAluno.setPassword(alunoSaved.getSenha());
+//        usuarioAluno.setProfessor(false);
+//
+//        usuarioService.save(usuarioProfessor);
+//        usuarioService.save(usuarioAluno);
 
-        roleService.save(roleProfessor);
-        roleService.save(roleAluno);
     }
 
 }
