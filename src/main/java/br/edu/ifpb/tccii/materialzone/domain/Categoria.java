@@ -12,6 +12,7 @@ public class Categoria {
 
     @Id
     private String id;
+    private String materialId;
     private String nome;
     private double pontuacaoFinalClassificacao;
 

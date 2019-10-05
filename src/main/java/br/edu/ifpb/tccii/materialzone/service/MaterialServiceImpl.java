@@ -2,7 +2,9 @@ package br.edu.ifpb.tccii.materialzone.service;
 
 import br.edu.ifpb.tccii.materialzone.abstration.GitRepositoryContentExtractor;
 import br.edu.ifpb.tccii.materialzone.abstration.MaterialService;
+import br.edu.ifpb.tccii.materialzone.domain.Categoria;
 import br.edu.ifpb.tccii.materialzone.domain.Material;
+import br.edu.ifpb.tccii.materialzone.repository.CategoriaRepository;
 import br.edu.ifpb.tccii.materialzone.repository.MaterialRepository;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +30,7 @@ public class MaterialServiceImpl implements MaterialService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired private MaterialRepository materialRepository;
     @Autowired private GitRepositoryContentExtractor gitRepositoryContentExtractor;
+    @Autowired private CategoriaRepository categoriaRepository;
 
     public MaterialServiceImpl() { }
 
@@ -64,17 +68,16 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public Page<Material> findMaterialsByNameCategories(String nameCategory, Pageable pageable) {
+    public List<Material> findMaterialsByNameCategories(String nameCategory, Pageable pageable) {
         log.debug("Request to get all Materiais by category");
-        QueryBuilder query = QueryBuilders.boolQuery()
-                .should(QueryBuilders.queryStringQuery(nameCategory)
-                        .lenient(true)
-                        .field("categorias.nome"))
-                .should(QueryBuilders.queryStringQuery("*" + nameCategory + "*")
-                        .lenient(true)
-                        .field("categorias.nome"));
-
-        return materialRepository.search(query, pageable);
+        Page<Categoria> categoriasPage = categoriaRepository.findAllByNome(nameCategory, pageable);
+        List<Categoria> categorias = categoriasPage.getContent();
+        List<Material> materials = new ArrayList<>();
+        for (Categoria categoria : categorias) {
+            Optional<Material> materialOptional = materialRepository.findById(categoria.getMaterialId());
+            if (materialOptional.isPresent()) materials.add(materialOptional.get());
+        }
+        return materials;
     }
 
     @Override

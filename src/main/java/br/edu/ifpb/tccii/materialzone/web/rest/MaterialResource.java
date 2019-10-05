@@ -48,6 +48,8 @@ public class MaterialResource {
 
         Material result = materialService.save(material); //salva para extracao de conteudo
 
+        System.out.println("\nID do material de result: "+ result.getId() +"\n");
+
         final String pooCategoryName = "Programação Orientada a Objeto";
         final String lmCategoryName = "Linguagem de Marcação";
         final String bdCategoryName = "Banco de Dados";
@@ -61,10 +63,10 @@ public class MaterialResource {
 
         final float minimumThreshold = 0.7F; //pontuação mínima de consideração de uma categoria
 
-        Categoria pooCategoria = insertCategoryIntoMaterial(pooCategoryName, pooCategoryPunctuationRanking);
-        Categoria lmCategoria = insertCategoryIntoMaterial(lmCategoryName, lmCategoryPunctuationRanking);
-        Categoria bdCategoria = insertCategoryIntoMaterial(bdCategoryName, bdCategoryPunctuationRanking);
-        Categoria lsCategoria = insertCategoryIntoMaterial(lsCategoryName, lsCategoryPunctuationRanking);
+        Categoria pooCategoria = insertCategoryIntoMaterial(pooCategoryName, result.getId(), pooCategoryPunctuationRanking);
+        Categoria lmCategoria = insertCategoryIntoMaterial(lmCategoryName, result.getId(), lmCategoryPunctuationRanking);
+        Categoria bdCategoria = insertCategoryIntoMaterial(bdCategoryName, result.getId(), bdCategoryPunctuationRanking);
+        Categoria lsCategoria = insertCategoryIntoMaterial(lsCategoryName, result.getId(), lsCategoryPunctuationRanking);
 
         if (pooCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) material.addCategoria(pooCategoria);
         if (lmCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) material.addCategoria(lmCategoria);
@@ -126,8 +128,8 @@ public class MaterialResource {
     public ResponseEntity<List<Material>> findMaterialsByNameCategoriesWithPagination(@PathVariable final String nome, @RequestParam("pagina") int pagina){
         log.debug("REST request to get all Materiais by name category");
         PageRequest pageRequest = PageRequest.of(pagina, 10);
-        Page<Material> materialsPag = materialService.findMaterialsByNameCategories(nome, pageRequest);
-        return ResponseEntity.ok().body(materialsPag.getContent());
+        List<Material> materials = materialService.findMaterialsByNameCategories(nome, pageRequest);
+        return ResponseEntity.ok().body(materials);
     }
 
     @GetMapping("/aluno/textsearch/{pieceTitleOrDescription}")
@@ -150,12 +152,16 @@ public class MaterialResource {
         return ResponseEntity.notFound().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, id, String.format("Material id %d inexists", id))).build();
     }
 
-    final private Categoria insertCategoryIntoMaterial(String nameCategory, float punctuationRankingCategory){
-        Categoria categoria = null;
-        categoria = new Categoria();
-        categoria.setNome(nameCategory);
-        categoria.setPontuacaoFinalClassificacao(punctuationRankingCategory);
-        return categoriaService.save(categoria);
+    final private Categoria insertCategoryIntoMaterial(String nameCategory, String materialId, float punctuationRankingCategory){
+        final float minimumThreshold = 0.7F;
+        Categoria categoria = new Categoria();
+        if (punctuationRankingCategory >= minimumThreshold) {
+            categoria.setMaterialId(materialId);
+            categoria.setNome(nameCategory);
+            categoria.setPontuacaoFinalClassificacao(punctuationRankingCategory);
+            return categoriaService.save(categoria);
+        }
+        return categoria;
     }
 
 }
