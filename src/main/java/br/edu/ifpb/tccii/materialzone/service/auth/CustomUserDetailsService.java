@@ -1,4 +1,4 @@
-package br.edu.ifpb.tccii.materialzone.service;
+package br.edu.ifpb.tccii.materialzone.service.auth;
 
 import br.edu.ifpb.tccii.materialzone.domain.Aluno;
 import br.edu.ifpb.tccii.materialzone.domain.Professor;
@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-      List<GrantedAuthority> authorityListProfessor = AuthorityUtils.createAuthorityList(ROLE_ALUNO, ROLE_PROFESSOR);
+      List<GrantedAuthority> authorityListProfessor = AuthorityUtils.createAuthorityList(ROLE_PROFESSOR);
       List<GrantedAuthority> authorityListAluno = AuthorityUtils.createAuthorityList(ROLE_ALUNO);
 
       Optional<Professor> optionalProfessor = professorRepository.findByEmail(email);

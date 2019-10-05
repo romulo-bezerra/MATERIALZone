@@ -4,6 +4,6 @@ import br.edu.ifpb.tccii.materialzone.domain.Categoria;
 
 public interface CategoriaService {
 
-    public Categoria save(Categoria categoria);
+    Categoria save(Categoria categoria);
 
 }

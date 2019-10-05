@@ -54,10 +54,4 @@ public class AlunoServiceImpl implements AlunoService {
         alunoRepository.deleteById(id);
     }
 
-    @Override
-    public Optional<Aluno> findByEmail(String email) {
-        log.debug("Request to get Aluno by email: {}", email);
-        return alunoRepository.findByEmail(email);
-    }
-
 }

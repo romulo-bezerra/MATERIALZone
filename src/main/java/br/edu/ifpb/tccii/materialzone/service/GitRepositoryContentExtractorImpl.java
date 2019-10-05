@@ -4,6 +4,7 @@ import br.edu.ifpb.tccii.materialzone.abstration.FileManager;
 import br.edu.ifpb.tccii.materialzone.abstration.GitRepositoryContentExtractor;
 import br.edu.ifpb.tccii.materialzone.abstration.GitRepositoryService;
 import br.edu.ifpb.tccii.materialzone.abstration.MimeTypeIdentifier;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class GitRepositoryContentExtractorImpl implements GitRepositoryContentEx
      * @return Uma lista de strings contendo os arquivos lidos do diretório. Cada String representa um arquivo
      */
     @Override
-    public List<String> extractContentRepository(String linkHttpRepository) {
+    public List<String> extractContentRepository(String linkHttpRepository) throws GitAPIException {
         log.debug("Clonando repositório");
         File clonedRepository = gitRepositoryService.doClone(linkHttpRepository);
         log.debug("Repositório clonado!");

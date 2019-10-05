@@ -2,17 +2,16 @@ package br.edu.ifpb.tccii.materialzone.web.rest;
 
 import br.edu.ifpb.tccii.materialzone.abstration.AlunoService;
 import br.edu.ifpb.tccii.materialzone.domain.Aluno;
-import br.edu.ifpb.tccii.materialzone.service.AlunoServiceImpl;
 import br.edu.ifpb.tccii.materialzone.web.errors.BadRequestAlertException;
 import br.edu.ifpb.tccii.materialzone.web.util.HeaderUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,11 +28,9 @@ public class AlunoResource {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String ENTITY_NAME = "Aluno";
 
-    private AlunoService alunoService;
+    @Autowired private AlunoService alunoService;
 
-    public AlunoResource(AlunoServiceImpl alunoService) {
-        this.alunoService = alunoService;
-    }
+    public AlunoResource() { }
 
     @PostMapping("")
     @ApiOperation(value = "Cria um novo aluno")
@@ -45,7 +42,6 @@ public class AlunoResource {
     }
 
     @PutMapping("")
-    @PreAuthorize("hasRole('ALUNO')")
     @ApiOperation(value = "Atualiza os dados de aluno")
     public ResponseEntity<Aluno> updateAluno(@Valid @RequestBody Aluno aluno) {
         log.debug("REST request to update Aluno : {}", aluno);
@@ -73,7 +69,6 @@ public class AlunoResource {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ALUNO')")
     @ApiOperation(value = "Deleta um aluno dado o ID")
     public ResponseEntity<Void> deleteAluno(@PathVariable String id) {
         log.debug("REST request to delete Aluno : {}", id);

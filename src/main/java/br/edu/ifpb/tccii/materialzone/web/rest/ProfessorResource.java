@@ -2,19 +2,16 @@ package br.edu.ifpb.tccii.materialzone.web.rest;
 
 import br.edu.ifpb.tccii.materialzone.abstration.ProfessorService;
 import br.edu.ifpb.tccii.materialzone.domain.Professor;
-import br.edu.ifpb.tccii.materialzone.service.ProfessorServiceImpl;
 import br.edu.ifpb.tccii.materialzone.web.errors.BadRequestAlertException;
 import br.edu.ifpb.tccii.materialzone.web.util.HeaderUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,11 +28,9 @@ public class ProfessorResource {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String ENTITY_NAME = "Professor";
 
-    private ProfessorService professorService;
+    @Autowired private ProfessorService professorService;
 
-    public ProfessorResource(ProfessorServiceImpl professorService) {
-        this.professorService = professorService;
-    }
+    public ProfessorResource() { }
 
     @PostMapping("")
     @ApiOperation(value = "Cria um novo professor")
@@ -47,7 +42,6 @@ public class ProfessorResource {
     }
 
     @PutMapping("")
-    @PreAuthorize("hasRole('PROFESSOR')")
     @ApiOperation(value = "Atualiza os dados de professor")
     public ResponseEntity<Professor> updateProfessor(@Valid @RequestBody Professor professor) {
         log.debug("REST request to update Professor : {}", professor);
@@ -60,11 +54,6 @@ public class ProfessorResource {
     @ApiOperation(value = "Recupera todos os professores")
     public ResponseEntity<List<Professor>> getAllProfessores(@RequestParam("pag") int pag) {
         log.debug("REST request to get all Professores");
-
-        System.out.println("\nUSER SESSAO: " + ((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getDetails());
-        System.out.println("\nUSER CREDENTIALS: " + ((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getCredentials());
-        System.out.println("\nUSER PRINCIPAL: " + ((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getPrincipal());
-
         PageRequest pageRequest = PageRequest.of(pag, 10);
         Page<Professor> professoresPag = professorService.findAll(pageRequest);
         return ResponseEntity.ok().body(professoresPag.getContent());
@@ -80,7 +69,6 @@ public class ProfessorResource {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('PROFESSOR')")
     @ApiOperation(value = "Deleta um professor dado o ID")
     public ResponseEntity<Void> deleteProfessor(@PathVariable String id) {
         log.debug("REST request to delete Professor : {}", id);

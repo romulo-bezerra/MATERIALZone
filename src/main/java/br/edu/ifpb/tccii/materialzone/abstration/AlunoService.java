@@ -12,6 +12,5 @@ public interface AlunoService {
     Page<Aluno> findAll(Pageable pageable);
     Optional<Aluno> findOne(String id);
     void delete(String id);
-    Optional<Aluno> findByEmail(String email);
 
 }

@@ -6,6 +6,7 @@ import br.edu.ifpb.tccii.materialzone.domain.Categoria;
 import br.edu.ifpb.tccii.materialzone.domain.Material;
 import br.edu.ifpb.tccii.materialzone.repository.CategoriaRepository;
 import br.edu.ifpb.tccii.materialzone.repository.MaterialRepository;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class MaterialServiceImpl implements MaterialService {
     public MaterialServiceImpl() { }
 
     @Override
-    public Material save(Material material) {
+    public Material save(Material material) throws GitAPIException {
         //Extraindo conteúdo
         String linkRepositorio = material.getLinkRepositorio();
         List<String> arquivosExtraidos = gitRepositoryContentExtractor.extractContentRepository(linkRepositorio);

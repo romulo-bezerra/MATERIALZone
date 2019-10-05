@@ -54,10 +54,4 @@ public class ProfessorServiceImpl implements ProfessorService {
         professorRepository.deleteById(id);
     }
 
-    @Override
-    public Optional<Professor> findByEmail(String email) {
-        log.debug("Request to get Professor by email: {}", email);
-        return professorRepository.findByEmail(email);
-    }
-
 }

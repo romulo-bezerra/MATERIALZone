@@ -1,6 +1,6 @@
 package br.edu.ifpb.tccii.materialzone.config;
 
-import br.edu.ifpb.tccii.materialzone.service.CustomUserDetailsService;
+import br.edu.ifpb.tccii.materialzone.service.auth.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,26 +20,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/aluno").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/aluno/**").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/aluno").hasRole("ALUNO")
+                .antMatchers(HttpMethod.DELETE, "/api/aluno").hasRole("ALUNO")
+
                 .antMatchers(HttpMethod.POST, "/api/professor").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/professor/**").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/professor").hasRole("PROFESSOR")
+                .antMatchers(HttpMethod.DELETE, "/api/professor").hasRole("PROFESSOR")
+
+                .antMatchers(HttpMethod.POST, "/api/material").hasRole("PROFESSOR")
+                .antMatchers(HttpMethod.PUT, "/api/material").hasRole("PROFESSOR")
+                .antMatchers(HttpMethod.DELETE, "/api/material").hasRole("PROFESSOR")
+                .antMatchers(HttpMethod.GET, "/api/material").hasAnyRole("PROFESSOR", "ALUNO")
+
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
                 .and().csrf().disable();
 
-//                .antMatchers(HttpMethod.POST, "/api/professor").anonymous()
-//                .antMatchers(HttpMethod.POST, "/api/aluno").permitAll()
-
-//                .anyRequest()
-//                .authenticated()
-//                .antMatchers("/api/material/professor/**").hasRole("PROFESSOR")
-//                .antMatchers("/api/material/aluno/**").hasAnyRole("ALUNO", "PROFESSOR")
-//                .antMatchers(HttpMethod.PUT, "/api/aluno").hasRole("ALUNO")
-//                .antMatchers(HttpMethod.DELETE, "/api/aluno").hasRole("ALUNO")
-//                .antMatchers(HttpMethod.PUT, "/api/professor").hasRole("PROFESSOR")
-//                .antMatchers(HttpMethod.DELETE, "/api/professor").hasRole("PROFESSOR")
-//                .anyRequest().authenticated().and().httpBasic().and()
-//                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
-//                .and().csrf().disable();
     }
 
     @Override
