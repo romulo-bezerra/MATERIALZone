@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +37,13 @@ public class MaterialServiceImpl implements MaterialService {
         List<String> arquivosExtraidos = gitRepositoryContentExtractor.extractContentRepository(linkRepositorio);
         material.setArquivosRepositorio(arquivosExtraidos);
         material.setTimestampCriacao(ZonedDateTime.now(ZoneId.systemDefault())); //setting atual time);
+        material.setEmailProfessor(getEmailUserSession());
         log.debug("Request to save Material : {}", material);
         return materialRepository.save(material);
+    }
+
+    private String getEmailUserSession() {
+        return (((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getName());
     }
 
     @Override
@@ -86,6 +93,11 @@ public class MaterialServiceImpl implements MaterialService {
     public void delete(String id) {
         log.debug("Request to delete Material : {}", id);
         materialRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Material> findByEmailProfessor(String emailProfessor, Pageable pageable) {
+        return materialRepository.findByEmailProfessor(emailProfessor, pageable);
     }
 
 }

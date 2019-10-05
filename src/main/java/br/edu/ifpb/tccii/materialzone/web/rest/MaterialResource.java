@@ -110,6 +110,16 @@ public class MaterialResource {
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
+    @GetMapping("/professor/{email}")
+    @PreAuthorize("hasRole('PROFESSOR')")
+    @ApiOperation(value = "Recupera todos os materias por um email de professor")
+    public ResponseEntity<List<Material>> findAllByEmailProfessorWithPagination(@PathVariable final String email, @RequestParam("pagina") int pagina) {
+        log.debug("REST request to get all Materiais of Professor by email");
+        PageRequest pageRequest = PageRequest.of(pagina, 10);
+        Page<Material> materialsPag = materialService.findByEmailProfessor(email, pageRequest);
+        return ResponseEntity.ok().body(materialsPag.getContent());
+    }
+
     @GetMapping("/aluno/categoria/{nome}")
     @PreAuthorize("hasRole('ALUNO')")
     @ApiOperation(value = "Recupera todos os materiais dado o nome da categoria")

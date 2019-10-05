@@ -3,6 +3,7 @@ package br.edu.ifpb.tccii.materialzone.service;
 import br.edu.ifpb.tccii.materialzone.abstration.AlunoService;
 import br.edu.ifpb.tccii.materialzone.domain.Aluno;
 import br.edu.ifpb.tccii.materialzone.repository.AlunoRepository;
+import br.edu.ifpb.tccii.materialzone.repository.ProfessorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class AlunoServiceImpl implements AlunoService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired private AlunoRepository alunoRepository;
+    @Autowired private ProfessorRepository professorRepository;
 
     public AlunoServiceImpl() { }
 
@@ -28,7 +30,11 @@ public class AlunoServiceImpl implements AlunoService {
         String password = aluno.getSenha();
         String passwordEncoded = passwordEncoder.encode(password);
         aluno.setSenha(passwordEncoded);
-        return alunoRepository.save(aluno);
+        if (!professorRepository.findByEmail(aluno.getEmail()).isPresent()
+                && !alunoRepository.findByEmail(aluno.getEmail()).isPresent()){
+            return alunoRepository.save(aluno);
+        }
+        return null;
     }
 
     @Transactional(readOnly = true)

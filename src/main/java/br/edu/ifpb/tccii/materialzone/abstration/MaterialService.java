@@ -14,5 +14,6 @@ public interface MaterialService {
     Page<Material> findMaterialsByNameCategories(String nameCategory, Pageable pageable);
     Page<Material> findAll(Pageable pageable);
     void delete(String id);
+    Page<Material> findByEmailProfessor(String emailProfessor, Pageable pageable);
 
 }

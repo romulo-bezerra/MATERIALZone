@@ -9,5 +9,6 @@ public interface MaterialRepository extends ElasticsearchRepository<Material, St
 
     @Override
     Page<Material> findAll(Pageable pageable);
+    Page<Material> findByEmailProfessor(String emailProfessor, Pageable pageable);
 
 }

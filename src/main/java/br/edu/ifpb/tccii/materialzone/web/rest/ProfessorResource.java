@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -58,6 +60,11 @@ public class ProfessorResource {
     @ApiOperation(value = "Recupera todos os professores")
     public ResponseEntity<List<Professor>> getAllProfessores(@RequestParam("pag") int pag) {
         log.debug("REST request to get all Professores");
+
+        System.out.println("\nUSER SESSAO: " + ((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getDetails());
+        System.out.println("\nUSER CREDENTIALS: " + ((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getCredentials());
+        System.out.println("\nUSER PRINCIPAL: " + ((SecurityContext) SecurityContextHolder.getContext()).getAuthentication().getPrincipal());
+
         PageRequest pageRequest = PageRequest.of(pag, 10);
         Page<Professor> professoresPag = professorService.findAll(pageRequest);
         return ResponseEntity.ok().body(professoresPag.getContent());

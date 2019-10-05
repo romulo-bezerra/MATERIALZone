@@ -2,6 +2,7 @@ package br.edu.ifpb.tccii.materialzone.service;
 
 import br.edu.ifpb.tccii.materialzone.abstration.ProfessorService;
 import br.edu.ifpb.tccii.materialzone.domain.Professor;
+import br.edu.ifpb.tccii.materialzone.repository.AlunoRepository;
 import br.edu.ifpb.tccii.materialzone.repository.ProfessorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class ProfessorServiceImpl implements ProfessorService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired private ProfessorRepository professorRepository;
+    @Autowired private AlunoRepository alunoRepository;
 
     public ProfessorServiceImpl() { }
 
@@ -28,7 +30,11 @@ public class ProfessorServiceImpl implements ProfessorService {
         String password = professor.getSenha();
         String passwordEncoded = passwordEncoder.encode(password);
         professor.setSenha(passwordEncoded);
-        return professorRepository.save(professor);
+        if (!professorRepository.findByEmail(professor.getEmail()).isPresent()
+                && !alunoRepository.findByEmail(professor.getEmail()).isPresent()){
+            return professorRepository.save(professor);
+        }
+        return null;
     }
 
     @Transactional(readOnly = true)

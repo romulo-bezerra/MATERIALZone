@@ -20,8 +20,9 @@ public class Material {
     private String titulo;
     private String descricao;
     private ZonedDateTime timestampCriacao;
-    private List<String> arquivosRepositorio;
+    private String emailProfessor;
     private List<Categoria> categorias;
+    private List<String> arquivosRepositorio;
 
     public Material(){ //For Spring Data
         this.categorias = new ArrayList<>();
