@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import javax.validation.constraints.NotNull;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,11 @@ public class Material {
 
     @Id
     private String id;
+    @NotNull
     private String linkRepositorio;
+    @NotNull
     private String titulo;
+    @NotNull
     private String descricao;
     private ZonedDateTime timestampCriacao;
     private String emailProfessor;

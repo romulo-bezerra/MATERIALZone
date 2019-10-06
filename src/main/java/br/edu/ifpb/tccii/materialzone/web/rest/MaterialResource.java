@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,9 @@ public class MaterialResource {
         final String bdCategoryName = "Banco de Dados";
         final String lsCategoryName = "Linguagem de Script";
 
-        ResultClassifier resultClassifier = classifierResultService.getResultClassification(result.getArquivosRepositorio());
+        List<String> arquivosRepo = result.getArquivosRepositorio();
+
+        ResultClassifier resultClassifier = classifierResultService.getResultClassification(arquivosRepo);
         final float pooCategoryPunctuationRanking = resultClassifier.getProgramacaoOrientadaObjetoRanking();
         final float lmCategoryPunctuationRanking = resultClassifier.getLinguagemMarcacaoRanking();
         final float bdCategoryPunctuationRanking = resultClassifier.getBancoDadosRanking();
@@ -153,5 +156,14 @@ public class MaterialResource {
         }
         return categoria;
     }
+
+//    final private List<String> removeKeySlices(List<String> arquivosRepo) {
+//        List<String> result = new ArrayList<>();
+//        String keySlice = "#-?_keySlice?_-#";
+//        for (String s : arquivosRepo) {
+//            result.add(s.replace(keySlice, ""));
+//        }
+//        return result;
+//    }
 
 }
