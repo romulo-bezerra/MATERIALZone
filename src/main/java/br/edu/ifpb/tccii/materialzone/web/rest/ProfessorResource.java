@@ -52,9 +52,9 @@ public class ProfessorResource {
 
     @GetMapping("")
     @ApiOperation(value = "Recupera todos os professores")
-    public ResponseEntity<List<Professor>> getAllProfessores(@RequestParam("pag") int pag) {
+    public ResponseEntity<List<Professor>> getAllProfessores(@RequestParam("pagina") int pagina) {
         log.debug("REST request to get all Professores");
-        PageRequest pageRequest = PageRequest.of(pag, 10);
+        PageRequest pageRequest = PageRequest.of(pagina, 10);
         Page<Professor> professoresPag = professorService.findAll(pageRequest);
         return ResponseEntity.ok().body(professoresPag.getContent());
     }

@@ -1,6 +1,7 @@
 package br.edu.ifpb.tccii.materialzone.domain;
 
 import br.edu.ifpb.tccii.materialzone.domain.enumeration.Sexo;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 public final class Professor {
 
     @Id
+    @ApiModelProperty( hidden = true)
     private String id;
     @NotNull
     private String nome;

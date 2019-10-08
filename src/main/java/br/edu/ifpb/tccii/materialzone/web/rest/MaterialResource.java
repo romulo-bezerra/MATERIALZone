@@ -108,7 +108,7 @@ public class MaterialResource {
         return ResponseEntity.ok().body(materialsPag.getContent());
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     @ApiOperation(value = "Recupera todos os materias por um email de professor")
     public ResponseEntity<List<Material>> findAllByEmailProfessorWithPagination(@PathVariable final String email, @RequestParam("pagina") int pagina) {
         log.debug("REST request to get all Materiais of Professor by email");
