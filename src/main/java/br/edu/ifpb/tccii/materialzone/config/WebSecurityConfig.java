@@ -19,7 +19,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf().disable()
+                .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/aluno").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/aluno/**").permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/aluno").hasRole("ALUNO")
@@ -37,8 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .anyRequest().authenticated()
                 .and().httpBasic()
-                .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
-                .and().csrf().disable();
+                .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
 
     }
 
