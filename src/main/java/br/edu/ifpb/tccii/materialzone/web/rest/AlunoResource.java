@@ -46,7 +46,7 @@ public class AlunoResource {
     public ResponseEntity<Aluno> updateAluno(@Valid @RequestBody Aluno aluno) {
         log.debug("REST request to update Aluno : {}", aluno);
         if (aluno.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        Aluno result = alunoService.save(aluno);
+        Aluno result = alunoService.update(aluno);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, aluno.getId())).body(result);
     }
 

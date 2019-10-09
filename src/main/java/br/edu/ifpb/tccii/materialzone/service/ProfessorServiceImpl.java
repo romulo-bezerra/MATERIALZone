@@ -39,6 +39,24 @@ public class ProfessorServiceImpl implements ProfessorService {
         return null;
     }
 
+    @Override
+    public Professor update(Professor professor) {
+        log.debug("Request to update Professor : {}", professor);
+        Optional<Professor> professorOptional = professorRepository.findById(professor.getId());
+        if (professorOptional.isPresent()){
+            Professor professorBanco = professorOptional.get();
+            professor.setEmail(professorBanco.getEmail());
+            if (!professor.getSenha().equalsIgnoreCase(professorBanco.getSenha())){
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                String password = professor.getSenha();
+                String passwordEncoded = passwordEncoder.encode(password);
+                professor.setSenha(passwordEncoded);
+            }
+            return professorRepository.save(professor);
+        }
+        return null;
+    }
+
     @Transactional(readOnly = true)
     public Page<Professor> findAll(Pageable pageable) {
         log.debug("Request to get all Professores");

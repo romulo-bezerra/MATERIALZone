@@ -39,6 +39,24 @@ public class AlunoServiceImpl implements AlunoService {
         return null;
     }
 
+    @Override
+    public Aluno update(Aluno aluno) {
+        log.debug("Request to update Aluno : {}", aluno);
+        Optional<Aluno> alunoOptional = alunoRepository.findById(aluno.getId());
+        if (alunoOptional.isPresent()){
+            Aluno alunoBanco = alunoOptional.get();
+            aluno.setEmail(alunoBanco.getEmail());
+            if (!aluno.getSenha().equalsIgnoreCase(alunoBanco.getSenha())){
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                String password = aluno.getSenha();
+                String passwordEncoded = passwordEncoder.encode(password);
+                aluno.setSenha(passwordEncoded);
+            }
+            return alunoRepository.save(aluno);
+        }
+        return null;
+    }
+
     @Transactional(readOnly = true)
     public Page<Aluno> findAll(Pageable pageable) {
         log.debug("Request to get all Alunos");

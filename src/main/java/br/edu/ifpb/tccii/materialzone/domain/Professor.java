@@ -32,6 +32,7 @@ public final class Professor {
     @NotNull
     private String instituto;
     private Sexo sexo;
+    @ApiModelProperty( hidden = true)
     private Papel papel;
     private String urlLattes;
     @NotNull

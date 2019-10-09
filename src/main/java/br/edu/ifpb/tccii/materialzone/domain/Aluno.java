@@ -32,6 +32,7 @@ public class Aluno {
     @NotNull
     private String instituto;
     private Sexo sexo;
+    @ApiModelProperty( hidden = true)
     private Papel papel;
     @NotNull
     private String curso;

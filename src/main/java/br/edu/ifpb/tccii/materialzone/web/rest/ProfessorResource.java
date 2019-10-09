@@ -46,7 +46,7 @@ public class ProfessorResource {
     public ResponseEntity<Professor> updateProfessor(@Valid @RequestBody Professor professor) {
         log.debug("REST request to update Professor : {}", professor);
         if (professor.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        Professor result = professorService.save(professor);
+        Professor result = professorService.update(professor);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, professor.getId())).body(result);
     }
 
