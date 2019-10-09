@@ -11,7 +11,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1")
-public class BasicAuthController {
+public class BasicAuthResource {
 
     @GetMapping(path = "/basicauth")
     public AuthenticationBean basicauth() {

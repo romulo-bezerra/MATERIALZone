@@ -1,5 +1,6 @@
 package br.edu.ifpb.tccii.materialzone.domain;
 
+import br.edu.ifpb.tccii.materialzone.domain.enumeration.Papel;
 import br.edu.ifpb.tccii.materialzone.domain.enumeration.Sexo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,6 +32,7 @@ public final class Professor {
     @NotNull
     private String instituto;
     private Sexo sexo;
+    private Papel papel;
     private String urlLattes;
     @NotNull
     private String areaEnsino;

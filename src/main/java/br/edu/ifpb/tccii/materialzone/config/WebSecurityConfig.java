@@ -22,12 +22,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/aluno").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/aluno/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/aluno/**").hasRole("ALUNO")
                 .antMatchers(HttpMethod.PUT, "/api/aluno").hasRole("ALUNO")
                 .antMatchers(HttpMethod.DELETE, "/api/aluno").hasRole("ALUNO")
 
                 .antMatchers(HttpMethod.POST, "/api/professor").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/professor/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/professor/**").hasRole("PROFESSOR")
                 .antMatchers(HttpMethod.PUT, "/api/professor").hasRole("PROFESSOR")
                 .antMatchers(HttpMethod.DELETE, "/api/professor").hasRole("PROFESSOR")
 

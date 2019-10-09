@@ -47,7 +47,7 @@ public class FileManagerImpl implements FileManager {
     }
 
     /**
-     * Lê todo o conteúdo de texto do arquivo
+     * Lê o conteúdo de texto do arquivo
      * @param file arquivo a ser analisado
      * @return string com o conteúdo do arquivo
      */

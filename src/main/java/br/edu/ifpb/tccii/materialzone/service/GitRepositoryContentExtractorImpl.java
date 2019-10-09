@@ -49,6 +49,7 @@ public class GitRepositoryContentExtractorImpl implements GitRepositoryContentEx
         log.debug("Arquivos escaneados: " + arquivosParaAnalise.length);
         log.debug("Escaneamento finalizado!");
         log.debug("Deletando diretório de repositório temporário...");
+
         //Deleta o arquivo clonado após o escaneamento
         fileManager.deleteDirectories(clonedRepository);
         log.debug("Repositório deletado!");

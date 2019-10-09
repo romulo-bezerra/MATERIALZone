@@ -2,6 +2,7 @@ package br.edu.ifpb.tccii.materialzone.service;
 
 import br.edu.ifpb.tccii.materialzone.abstration.AlunoService;
 import br.edu.ifpb.tccii.materialzone.domain.Aluno;
+import br.edu.ifpb.tccii.materialzone.domain.enumeration.Papel;
 import br.edu.ifpb.tccii.materialzone.repository.AlunoRepository;
 import br.edu.ifpb.tccii.materialzone.repository.ProfessorRepository;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class AlunoServiceImpl implements AlunoService {
 
     public Aluno save(Aluno aluno) {
         log.debug("Request to save Aluno : {}", aluno);
+        aluno.setPapel(Papel.ALUNO);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String password = aluno.getSenha();
         String passwordEncoded = passwordEncoder.encode(password);
