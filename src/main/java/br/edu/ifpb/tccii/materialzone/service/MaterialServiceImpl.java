@@ -37,13 +37,38 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public Material save(Material material) throws GitAPIException {
+        log.debug("Request to save Material : {}", material);
         //Extraindo conteúdo
         String linkRepositorio = material.getLinkRepositorio();
         List<String> arquivosExtraidos = gitRepositoryContentExtractor.extractContentRepository(linkRepositorio);
         material.setArquivosRepositorio(arquivosExtraidos);
         material.setTimestampCriacao(ZonedDateTime.now(ZoneId.systemDefault())); //setting atual time);
         material.setEmailProfessor(getEmailUserSession());
-        log.debug("Request to save Material : {}", material);
+        return materialRepository.save(material);
+    }
+
+//    @Override
+//    public Material update(Material material) throws GitAPIException {
+//        log.debug("Request to update Material : {}", material);
+//        Optional<Material> optionalMaterial = materialRepository.findById(material.getId());
+//        if (optionalMaterial.isPresent()) {
+//            Material materialBanco = optionalMaterial.get();
+//            if (!material.getLinkRepositorio().equalsIgnoreCase(materialBanco.getLinkRepositorio())){
+//                //Extraindo conteúdo
+//                String linkRepositorio = material.getLinkRepositorio();
+//                List<String> arquivosExtraidos = gitRepositoryContentExtractor.extractContentRepository(linkRepositorio);
+//                material.setArquivosRepositorio(arquivosExtraidos);
+//            }
+//            material.setEmailProfessor(materialBanco.getEmailProfessor());
+//            material.setTimestampCriacao(materialBanco.getTimestampCriacao());
+//            return materialRepository.save(material);
+//        }
+//        return null;
+//    }
+
+    @Override
+    public Material update(Material material) throws GitAPIException {
+        log.debug("Request to update Material : {}", material);
         return materialRepository.save(material);
     }
 

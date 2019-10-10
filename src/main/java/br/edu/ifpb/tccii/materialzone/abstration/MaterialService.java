@@ -17,5 +17,6 @@ public interface MaterialService {
     Page<Material> findAll(Pageable pageable);
     void delete(String id);
     Page<Material> findByEmailProfessor(String emailProfessor, Pageable pageable);
+    Material update(Material material) throws GitAPIException;
 
 }

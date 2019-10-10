@@ -36,6 +36,12 @@ public class MaterialResource {
     @Autowired private CategoriaService categoriaService;
     private ClassifierResultService classifierResultService;
 
+    private final String pooCategoryName = "Programação Orientada a Objeto";
+    private final String lmCategoryName = "Linguagem de Marcação";
+    private final String bdCategoryName = "Banco de Dados";
+    private final String lsCategoryName = "Linguagem de Script";
+    private final float minimumThreshold = 0.7F; //pontuação mínima de consideração de uma categoria
+
     public MaterialResource(ClassifierResultService classifierResultService) {
         this.classifierResultService = classifierResultService;
     }
@@ -47,11 +53,6 @@ public class MaterialResource {
 
         Material result = materialService.save(material); //salva para extracao de conteudo
 
-        final String pooCategoryName = "Programação Orientada a Objeto";
-        final String lmCategoryName = "Linguagem de Marcação";
-        final String bdCategoryName = "Banco de Dados";
-        final String lsCategoryName = "Linguagem de Script";
-
         List<String> arquivosRepo = result.getArquivosRepositorio();
 
         ResultClassifier resultClassifier = classifierResultService.getResultClassification(arquivosRepo);
@@ -60,19 +61,17 @@ public class MaterialResource {
         final float bdCategoryPunctuationRanking = resultClassifier.getBancoDadosRanking();
         final float lsCategoryPunctuationRanking = resultClassifier.getLinguagemScriptRanking();
 
-        final float minimumThreshold = 0.7F; //pontuação mínima de consideração de uma categoria
-
         Categoria pooCategoria = insertCategoryIntoMaterial(pooCategoryName, result.getId(), pooCategoryPunctuationRanking);
         Categoria lmCategoria = insertCategoryIntoMaterial(lmCategoryName, result.getId(), lmCategoryPunctuationRanking);
         Categoria bdCategoria = insertCategoryIntoMaterial(bdCategoryName, result.getId(), bdCategoryPunctuationRanking);
         Categoria lsCategoria = insertCategoryIntoMaterial(lsCategoryName, result.getId(), lsCategoryPunctuationRanking);
 
-        if (pooCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) material.addCategoria(pooCategoria);
-        if (lmCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) material.addCategoria(lmCategoria);
-        if (bdCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) material.addCategoria(bdCategoria);
-        if (lsCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) material.addCategoria(lsCategoria);
+        if (pooCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) result.addCategoria(pooCategoria);
+        if (lmCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) result.addCategoria(lmCategoria);
+        if (bdCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) result.addCategoria(bdCategoria);
+        if (lsCategoria.getPontuacaoFinalClassificacao() >= minimumThreshold) result.addCategoria(lsCategoria);
 
-        materialService.save(result); //atualiza a adição de categorias no material
+        materialService.update(result); //atualiza a adição de categorias no material
 
         return ResponseEntity.created(new URI("/api/materiais/" + result.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId())).body(result);
@@ -83,7 +82,7 @@ public class MaterialResource {
     public ResponseEntity<Material> updateMaterial(@Valid @RequestBody Material material) throws URISyntaxException, GitAPIException {
         log.debug("REST request to update Material : {}", material);
         if (material.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        Material result = materialService.save(material);
+        Material result = materialService.update(material);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, material.getId())).body(result);
     }
 
@@ -145,7 +144,6 @@ public class MaterialResource {
     }
 
     final private Categoria insertCategoryIntoMaterial(String nameCategory, String materialId, float punctuationRankingCategory){
-        final float minimumThreshold = 0.7F;
         Categoria categoria = new Categoria();
         if (punctuationRankingCategory >= minimumThreshold) {
             categoria.setMaterialId(materialId);
@@ -155,14 +153,5 @@ public class MaterialResource {
         }
         return categoria;
     }
-
-//    final private List<String> removeKeySlices(List<String> arquivosRepo) {
-//        List<String> result = new ArrayList<>();
-//        String keySlice = "#-?_keySlice?_-#";
-//        for (String s : arquivosRepo) {
-//            result.add(s.replace(keySlice, ""));
-//        }
-//        return result;
-//    }
 
 }
