@@ -27,15 +27,14 @@ public class Material {
     private String titulo;
     @NotNull
     private String descricao;
-
     @ApiModelProperty( hidden = true)
     private ZonedDateTime timestampCriacao;
+    @ApiModelProperty( hidden = true)
+    private List<String> arquivosRepositorio;
     @ApiModelProperty( hidden = true)
     private String emailProfessor;
     @ApiModelProperty( hidden = true)
     private List<Categoria> categorias;
-    @ApiModelProperty( hidden = true)
-    private List<String> arquivosRepositorio;
 
     public Material(){ //For Spring Data
         this.categorias = new ArrayList<>();
